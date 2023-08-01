@@ -55,6 +55,8 @@ cd ..
 cd $REPO_NAME
 mkdir .tekton
 mv $REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$REPO_NAME-push.yaml
+git add .tekton/$REPO_NAME-push.yaml
+git commit -sm "Add the tekton push file" .tekton/$REPO_NAME-push.yaml; git push
 cd ..
 ```
 
