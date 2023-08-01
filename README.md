@@ -20,6 +20,8 @@ gh repo create $ORG_NAME/$REPO_DEMO --public
 rm -rf $REPO_NAME; mkdir $REPO_NAME; cd $REPO_NAME
 git init
 echo "## RHTAP Demo 1" > README.md
+echo "$REPO_TEMPLATE-$BRANCH/" > .gitignore
+
 git add .
 
 ## Import runtime code
@@ -28,7 +30,6 @@ wget https://github.com/$ORG_NAME/$REPO_TEMPLATE/archive/$BRANCH.zip
 unzip $BRANCH.zip
 mv $REPO_TEMPLATE-$BRANCH/quarkus-hello/.mvn/ .
 mv $REPO_TEMPLATE-$BRANCH/quarkus-hello/* .
-rm $BRANCH.zip; rm -r $REPO_TEMPLATE-$BRANCH
 
 git add .
 git commit -m "Upload quarkus hello runtime"
@@ -42,6 +43,18 @@ cd ..
 ```bash
 http :8080/hello
 http :8080/hello/greeting/charles
+```
+- Creating a .Tekton project
+```bash
+cd $REPO_NAME
+mkdir .tekton
+mv $REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$REPO_NAME-push.yaml
+cd ..
+```
+
+- Cleaning
+```bash
+rm $BRANCH.zip; rm -r $REPO_TEMPLATE-$BRANCH
 ```
 
 
