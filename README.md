@@ -42,8 +42,12 @@ cd ..
 ```
 - Test it locally
 ```bash
+cd $REPO_DEMO
+mvn clean compile; mvn quarkus:dev
+
 http :8080/hello
 http :8080/hello/greeting/charles
+cd ..
 ```
 - Creating a .Tekton project
 ```bash
