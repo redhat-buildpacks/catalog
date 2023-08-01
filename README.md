@@ -20,8 +20,6 @@ gh repo create $ORG_NAME/$REPO_DEMO --public
 rm -rf $REPO_NAME; mkdir $REPO_NAME; cd $REPO_NAME
 git init
 echo "## RHTAP Demo 1" > README.md
-echo "$REPO_TEMPLATE-$BRANCH/" > .gitignore
-
 git add .
 
 ## Import runtime code
@@ -30,6 +28,9 @@ wget https://github.com/$ORG_NAME/$REPO_TEMPLATE/archive/$BRANCH.zip
 unzip $BRANCH.zip
 mv $REPO_TEMPLATE-$BRANCH/quarkus-hello/.mvn/ .
 mv $REPO_TEMPLATE-$BRANCH/quarkus-hello/* .
+
+echo "$REPO_TEMPLATE-$BRANCH/" > .gitignore
+echo "$BRANCH.zip" >> .gitignore
 
 git add .
 git commit -m "Upload quarkus hello runtime"
