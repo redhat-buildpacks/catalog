@@ -14,6 +14,9 @@ ORG_NAME=halkyonio
 REPO_TEMPLATE=rhtap-templates
 REPO_DEMO=rhtap-demo1
 
+gh repo delete $ORG_NAME/$REPO_DEMO --yes
+gh repo create $ORG_NAME/$REPO_DEMO --public
+
 rm -rf $REPO_NAME; mkdir $REPO_NAME; cd $REPO_NAME
 git init
 echo "## RHTAP Demo 1" > README.md
@@ -22,12 +25,23 @@ git add .
 ## Import runtime code
 BRANCH=main
 wget https://github.com/$ORG_NAME/$REPO_TEMPLATE/archive/$BRANCH.zip
-unzip $BRANCH.zip; rm $BRANCH.zip
-mv $REPO_TEMPLATE/quarkus-hello .
-rm -r $REPO_TEMPLATE-$BRANCH
+unzip $BRANCH.zip
+mv $REPO_TEMPLATE-$BRANCH/quarkus-hello/.mvn/ .
+mv $REPO_TEMPLATE-$BRANCH/quarkus-hello/* .
+rm $BRANCH.zip; rm -r $REPO_TEMPLATE-$BRANCH
+
 git add .
 git commit -m "Upload quarkus hello runtime"
-#gh repo create $ORG_NAME/$REPO_NAME --public --add-readme --source . --push
+
+git branch -M main
+git remote add origin git@github.com:$ORG_NAME/$REPO_DEMO.git
+git push -u origin main
+cd ..
+```
+- Test it locally
+```bash
+http :8080/hello
+http :8080/hello/greeting/charles
 ```
 
 
