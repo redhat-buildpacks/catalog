@@ -65,12 +65,14 @@ APPLICATION_NAME=$REPO_DEMO_NAME
 COMPONENT_NAME="quarkus-hello"
 PAC_NAME=$COMPONENT_NAME-$(openssl rand -base64 4 | tr -dc 'a-zA-Z0-9' | cut -c1-5)
 PAC_YAML_FILE=".tekton/$REPO_DEMO_NAME-push.yaml"
+# REGISTRY_URL=quay.io/redhat-user-workloads/cmoullia-tenant/$REPO_DEMO_NAME
+REGISTRY_URL=quay.io/$ORG_NAME/$REPO_DEMO_NAME
 
-sed -i.bak 's/#APPLICATION_NAME#/"$APPLICATION_NAME"/g' $PAC_YAML_FILE
-sed -i.bak 's/#COMPONENT_NAME#/"$COMPONENT_NAME"/g' $PAC_YAML_FILE
-sed -i.bak 's/#PAC_NAME#/"$PAC_NAME"/g' $PAC_YAML_FILE
-
-
+sed -i.bak "s/#APPLICATION_NAME#/$APPLICATION_NAME/g" $PAC_YAML_FILE
+sed -i.bak "s/#COMPONENT_NAME#/"$COMPONENT_NAME"/g" $PAC_YAML_FILE
+sed -i.bak "s/#PAC_NAME#/"$PAC_NAME"/g" $PAC_YAML_FILE
+sed -i.bak "s/#REGISTRY_URL#/"$REGISTRY_URL"/g"  $PAC_YAML_FILE
+rm $PAC_YAML_FILE.bak
 git commit -sm "Add the tekton push file" .tekton/$REPO_DEMO_NAME-push.yaml; git push
 cd ..
 ```

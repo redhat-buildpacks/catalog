@@ -24,7 +24,8 @@ spec:
     - name: image-expires-after
       value: 5d
     - name: output-image
-      value: quay.io/redhat-user-workloads/cmoullia-tenant/#APPLICATION_NAME#/#COMPONENT_NAME#:build-{{revision}} #TODO: changeme
+      # Example: quay.io/redhat-user-workloads/cmoullia-tenant/rhtap-buildpack-demo-1/quarkus-hello-1:8e532f04f5cd873acc57cf5d0514111af93a8b91
+      value: #REGISTRY_URL#/#COMPONENT_NAME#:build-{{revision}} #TODO: changeme
     - name: path-context
       value: .
     - name: revision
