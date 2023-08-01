@@ -31,6 +31,7 @@ mv $REPO_TEMPLATE-$BRANCH/quarkus-hello/* .
 
 echo "$REPO_TEMPLATE-$BRANCH/" > .gitignore
 echo "$BRANCH.zip" >> .gitignore
+echo "target/" >> .gitignore
 
 git add .
 git commit -m "Upload quarkus hello runtime"
