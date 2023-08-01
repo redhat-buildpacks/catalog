@@ -59,7 +59,7 @@ mv $REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$REPO_DEMO_NAME-push
 git add .tekton/$REPO_DEMO_NAME-push.yaml
 ```
 
-- Setting the RHTAP parameters
+- Customizing the RHTAP Pipeline
 ```bash
 APPLICATION_NAME=$REPO_DEMO_NAME
 COMPONENT_NAME="quarkus-hello"
