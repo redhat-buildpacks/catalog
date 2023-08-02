@@ -138,7 +138,7 @@ spec:
   source:
     git:
       context: ./
-      #devfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/devfile.yaml
+      devfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/devfile.yaml
       #dockerfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/src/main/docker/Dockerfile.jvm.staged
       revision: main
       url: https://github.com/halkyonio/$REPO_DEMO_NAME.git
@@ -150,7 +150,6 @@ EOF
 [,bash]
 ----
 kubectl delete application/$REPO_DEMO_NAME
-kubectl delete component/$COMPONENT_NAME
 rm $BRANCH.zip; rm -r $REPO_TEMPLATE-$BRANCH
 ----
 
