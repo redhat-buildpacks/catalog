@@ -45,8 +45,8 @@ git add .
 BRANCH=main
 wget https://github.com/$ORG_NAME/$REPO_TEMPLATE/archive/$BRANCH.zip
 unzip $BRANCH.zip
-mv $REPO_TEMPLATE-$BRANCH/quarkus-hello/.mvn/ .
-mv $REPO_TEMPLATE-$BRANCH/quarkus-hello/* .
+mv $REPO_TEMPLATE-$BRANCH/$COMPONENT_NAME/.mvn/ .
+mv $REPO_TEMPLATE-$BRANCH/$COMPONENT_NAME/* .
 
 echo "$REPO_TEMPLATE-$BRANCH/" > .gitignore
 echo "$BRANCH.zip" >> .gitignore
@@ -125,10 +125,10 @@ metadata:
     #applicationFailCounter: "0"
     #appstudio.openshift.io/component-initial-build: processed
     #appstudio.openshift.io/pac-provision: done
-  name: quarkus-hello
+  name: $COMPONENT_NAME
 spec:
   application: $REPO_DEMO_NAME
-  componentName: quarkus-hello
+  componentName: $COMPONENT_NAME
   #containerImage: quay.io/redhat-user-workloads/cmoullia-tenant/$REPO_DEMO_NAME/$COMPONENT_NAME
   replicas: 1
   resources:
