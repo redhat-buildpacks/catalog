@@ -1,19 +1,32 @@
-## RHTAP Templates
+:icons: font
+:revdate: {docdate}
+:toc: left
+:toclevels: 2
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+== RHTAP Templates
 
 This project contains the code source needed to demo buildpack on RHTAP such as:
-- Quarkus REST service axposing a Hello endpoint `/hello` and `/hello/greeting/{name}` 
-- Tekton PipelineRun able to build a container image using buildpack.
 
-## HowTo
+* Quarkus REST service axposing a Hello endpoint `/hello` and `+/hello/greeting/{name}+`
+* Tekton PipelineRun able to build a container image using buildpack.
+
+== HowTo
 
 To create a new GitHub repository and import the needed files, perform the following actions:
 
-- Git auth
+* Git auth
 `gh auth login --with-token <YOUR_GITHUB_TOKEN>`
+* Create a GitHub repository
 
-- Create a GitHub repository
-
-```bash
+[,bash]
+----
 ORG_NAME=halkyonio
 REPO_TEMPLATE=rhtap-templates
 REPO_DEMO_NAME=rhtap-buildpack-demo-1
@@ -45,8 +58,9 @@ git branch -M main
 git remote add origin git@github.com:$ORG_NAME/$REPO_DEMO_NAME.git
 git push -u origin main
 cd ..
-```
-- Test it locally
+----
+
+* Test it locally
 ```bash
 cd $REPO_DEMO_NAME
 mvn clean compile; mvn quarkus:dev
@@ -54,22 +68,25 @@ mvn clean compile; mvn quarkus:dev
 http :8080/hello
 http :8080/hello/greeting/charles
 cd ..
-```
+
+----
 - Create a `.Tekton` folder
 ```bash
 cd $REPO_DEMO_NAME
 mkdir .tekton
 mv $REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$REPO_DEMO_NAME-push.yaml
 git add .tekton/$REPO_DEMO_NAME-push.yaml
-```
+----
 
-- Customize the RHTAP PipelineRun
+* Customize the RHTAP PipelineRun
 ```bash
 APPLICATION_NAME=$REPO_DEMO_NAME
 COMPONENT_NAME="quarkus-hello"
 PAC_NAME=$COMPONENT_NAME-$(openssl rand -base64 4 | tr -dc 'a-zA-Z0-9' | cut -c1-5)
 PAC_YAML_FILE=".tekton/$REPO_DEMO_NAME-push.yaml"
-# REGISTRY_URL=quay.io/redhat-user-workloads/cmoullia-tenant/$REPO_DEMO_NAME
++
+= REGISTRY_URL=quay.io/redhat-user-workloads/cmoullia-tenant/$REPO_DEMO_NAME
++
 REGISTRY_URL=quay.io/$ORG_NAME/$REPO_DEMO_NAME
 
 sed -i.bak "s/#APPLICATION_NAME#/$APPLICATION_NAME/g" $PAC_YAML_FILE
@@ -79,19 +96,18 @@ sed -i.bak "s/#REGISTRY_URL#/"$REGISTRY_URL"/g"  $PAC_YAML_FILE
 rm $PAC_YAML_FILE.bak
 git commit -sm "Add the tekton push file" .tekton/$REPO_DEMO_NAME-push.yaml; git push
 cd ..
-```
+
+----
 - Import it as documented here: https://redhat-appstudio.github.io/docs.appstudio.io/Documentation/main/how-to-guides/Import-code/proc_importing_code/
 
 - Cleaning
 ```bash
 rm $BRANCH.zip; rm -r $REPO_TEMPLATE-$BRANCH
-```
+----
 
+== Issue
 
-
-## Issue
-
-### Full image path not supported
+=== Full image path not supported
 
 The lifecycle component and most probably google container library (used by lifecycle to access the registry) do not support such advanced feature: https://kubernetes.io/docs/concepts/containers/images/#kubelet-credential-provider
 The consequence is that if several secrets are attached to the `appstudio-pipeline` service account and subsequently by the pod running lifecycle, then
