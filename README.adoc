@@ -108,7 +108,7 @@ cd ..
 [,bash]
 ----
 TENANT_NAMESPACE=<YOUR_TENANT_NAMESPACE>
-cat <<EOF | kubectl apply -f -n $TENANT_NAMESPACE -
+cat <<EOF | kubectl apply -n $TENANT_NAMESPACE -f -
 ---
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Application
