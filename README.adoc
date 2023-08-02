@@ -107,7 +107,8 @@ cd ..
 - Alternatively, create the following Application CR and Component CR
 [,bash]
 ----
-cat <<EOF | kubectl apply -f -n <YOUR_TENANT_NAMESPACE> -
+TENANT_NAMESPACE=<YOUR_TENANT_NAMESPACE>
+cat <<EOF | kubectl apply -f -n $TENANT_NAMESPACE -
 ---
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Application
@@ -124,7 +125,7 @@ apiVersion: appstudio.redhat.com/v1alpha1
 kind: Component
 metadata:
   annotations:
-    applicationFailCounter: "0"
+    #applicationFailCounter: "0"
     #appstudio.openshift.io/component-initial-build: processed
     #appstudio.openshift.io/pac-provision: done
   name: quarkus-hello
@@ -135,7 +136,7 @@ metadata:
 spec:
   application: rhtap-buildpack-demo-1
   componentName: quarkus-hello
-  containerImage: quay.io/redhat-user-workloads/cmoullia-tenant/rhtap-buildpack-demo-1/quarkus-hello
+  #containerImage: quay.io/redhat-user-workloads/cmoullia-tenant/rhtap-buildpack-demo-1/quarkus-hello
   replicas: 1
   resources:
     requests:
@@ -144,8 +145,8 @@ spec:
   source:
     git:
       context: ./
-      devfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/devfile.yaml
-      dockerfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/src/main/docker/Dockerfile.jvm.staged
+      #devfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/devfile.yaml
+      #dockerfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/src/main/docker/Dockerfile.jvm.staged
       revision: main
       url: https://github.com/halkyonio/rhtap-buildpack-demo-1.git
   targetPort: 8081
