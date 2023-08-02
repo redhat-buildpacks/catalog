@@ -1,3 +1,4 @@
+= RHTAP Templates
 :icons: font
 :revdate: {docdate}
 :toc: left
@@ -10,7 +11,7 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-== RHTAP Templates
+== Introduction
 
 This project contains the code source needed to demo buildpack on RHTAP such as:
 
