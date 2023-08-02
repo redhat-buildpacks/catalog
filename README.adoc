@@ -129,10 +129,6 @@ metadata:
     #appstudio.openshift.io/component-initial-build: processed
     #appstudio.openshift.io/pac-provision: done
   name: quarkus-hello
-  ownerReferences:
-  - apiVersion: appstudio.redhat.com/v1alpha1
-    kind: Application
-    name: rhtap-buildpack-demo-1
 spec:
   application: rhtap-buildpack-demo-1
   componentName: quarkus-hello
