@@ -129,7 +129,7 @@ metadata:
 spec:
   application: $REPO_DEMO_NAME
   componentName: $COMPONENT_NAME
-  containerImage: quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$REPO_DEMO_NAME/$COMPONENT_NAME
+  #containerImage: quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$REPO_DEMO_NAME/$COMPONENT_NAME
   replicas: 1
   resources:
     requests:
