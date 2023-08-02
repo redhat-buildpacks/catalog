@@ -104,6 +104,54 @@ cd ..
 
 - Import it as documented here: https://redhat-appstudio.github.io/docs.appstudio.io/Documentation/main/how-to-guides/Import-code/proc_importing_code/
 
+- Alternatively, create the following Application CR and Component CR
+[,bash]
+----
+cat <<EOF | kubectl apply -f -n <YOUR_TENANT_NAMESPACE> -
+---
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+  name: rhtap-buildpack-demo-1
+spec:
+  appModelRepository:
+    url: ""
+  displayName: rhtap-buildpack-demo-1
+  gitOpsRepository:
+    url: ""
+---
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    applicationFailCounter: "0"
+    #appstudio.openshift.io/component-initial-build: processed
+    #appstudio.openshift.io/pac-provision: done
+  name: quarkus-hello
+  ownerReferences:
+  - apiVersion: appstudio.redhat.com/v1alpha1
+    kind: Application
+    name: rhtap-buildpack-demo-1
+spec:
+  application: rhtap-buildpack-demo-1
+  componentName: quarkus-hello
+  containerImage: quay.io/redhat-user-workloads/cmoullia-tenant/rhtap-buildpack-demo-1/quarkus-hello
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 100Mi
+  source:
+    git:
+      context: ./
+      devfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/devfile.yaml
+      dockerfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/src/main/docker/Dockerfile.jvm.staged
+      revision: main
+      url: https://github.com/halkyonio/rhtap-buildpack-demo-1.git
+  targetPort: 8081
+EOF
+----
+
 - Cleaning
 [,bash]
 ----
