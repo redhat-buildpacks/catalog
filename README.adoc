@@ -61,7 +61,8 @@ git push -u origin main
 cd ..
 ----
 
-* Test it locally
+[,bash]
+----
 ```bash
 cd $REPO_DEMO_NAME
 mvn clean compile; mvn quarkus:dev
@@ -69,10 +70,11 @@ mvn clean compile; mvn quarkus:dev
 http :8080/hello
 http :8080/hello/greeting/charles
 cd ..
-
 ----
+
 - Create a `.Tekton` folder
-```bash
+[,bash]
+----
 cd $REPO_DEMO_NAME
 mkdir .tekton
 mv $REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$REPO_DEMO_NAME-push.yaml
@@ -80,7 +82,8 @@ git add .tekton/$REPO_DEMO_NAME-push.yaml
 ----
 
 * Customize the RHTAP PipelineRun
-```bash
+[,bash]
+----
 APPLICATION_NAME=$REPO_DEMO_NAME
 COMPONENT_NAME="quarkus-hello"
 PAC_NAME=$COMPONENT_NAME-$(openssl rand -base64 4 | tr -dc 'a-zA-Z0-9' | cut -c1-5)
@@ -97,12 +100,13 @@ sed -i.bak "s/#REGISTRY_URL#/"$REGISTRY_URL"/g"  $PAC_YAML_FILE
 rm $PAC_YAML_FILE.bak
 git commit -sm "Add the tekton push file" .tekton/$REPO_DEMO_NAME-push.yaml; git push
 cd ..
-
 ----
+
 - Import it as documented here: https://redhat-appstudio.github.io/docs.appstudio.io/Documentation/main/how-to-guides/Import-code/proc_importing_code/
 
 - Cleaning
-```bash
+[,bash]
+----
 rm $BRANCH.zip; rm -r $REPO_TEMPLATE-$BRANCH
 ----
 
