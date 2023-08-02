@@ -1,13 +1,17 @@
 ## RHTAP Templates
 
-This project contains the code source needed to feed a RHTAP runtime demo project like also Tekton PipelineAsCode
+This project contains the code source needed to demo buildpack on RHTAP such as:
+- Quarkus REST service axposing a Hello endpoint `/hello` and `/hello/greeting/{name}` 
+- Tekton PipelineRun able to build a container image using buildpack.
 
-To use them, perform the following actions using the github cli:
+## HowTo
+
+To create a new GitHub repository and import the needed files, perform the following actions:
 
 - Git auth
-`echo $(PASSWORD_STORE_DIR=~/.password-store-work pass show github/apps/dabou-1/github_token) | gh auth login --with-token`
+`gh auth login --with-token <YOUR_GITHUB_TOKEN>`
 
-- Create github project
+- Create a GitHub repository
 
 ```bash
 ORG_NAME=halkyonio
@@ -51,7 +55,7 @@ http :8080/hello
 http :8080/hello/greeting/charles
 cd ..
 ```
-- Creating a .Tekton project
+- Create a `.Tekton` folder
 ```bash
 cd $REPO_DEMO_NAME
 mkdir .tekton
@@ -59,7 +63,7 @@ mv $REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$REPO_DEMO_NAME-push
 git add .tekton/$REPO_DEMO_NAME-push.yaml
 ```
 
-- Customizing the RHTAP Pipeline
+- Customize the RHTAP PipelineRun
 ```bash
 APPLICATION_NAME=$REPO_DEMO_NAME
 COMPONENT_NAME="quarkus-hello"
@@ -76,6 +80,7 @@ rm $PAC_YAML_FILE.bak
 git commit -sm "Add the tekton push file" .tekton/$REPO_DEMO_NAME-push.yaml; git push
 cd ..
 ```
+- Import it as documented here: https://redhat-appstudio.github.io/docs.appstudio.io/Documentation/main/how-to-guides/Import-code/proc_importing_code/
 
 - Cleaning
 ```bash
@@ -84,3 +89,11 @@ rm $BRANCH.zip; rm -r $REPO_TEMPLATE-$BRANCH
 
 
 
+## Issue
+
+### Full image path not supported
+
+The lifecycle component and most probably google container library (used by lifecycle to access the registry) do not support such advanced feature: https://kubernetes.io/docs/concepts/containers/images/#kubelet-credential-provider
+The consquence is that if several secrets are attached to the `appstudio-pipeline` service account and subsequently by the pod running lifecycle, then
+lifecycle, at the analysis step, will raise an issue if it doesn't get as first entry of the `auths:` config file (from mounted secrets) the full image path matching the image name declared
+as output image.
