@@ -14,7 +14,7 @@ metadata:
     appstudio.openshift.io/application: #APPLICATION_NAME#  #TODO: changeme
     appstudio.openshift.io/component: #COMPONENT_NAME# #TODO: changeme
     pipelines.appstudio.openshift.io/type: build
-    rhtap.snowdrop.dev/build: "test-"
+    rhtap.snowdrop.dev/build: test-#BUILD_ID#
   name: #PAC_NAME# #TODO: changeme
   namespace: #TENANT_NAMESPACE# #TODO: changeme
 spec:
