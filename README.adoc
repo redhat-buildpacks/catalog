@@ -32,7 +32,7 @@ Feel free to change them according to your GitHub organisation, tenant namespace
 [,bash]
 ----
 GITHUB_ORG_NAME=halkyonio
-GITHUB_REPO_TEMPLATE=rhtap-templates # TODO: Change the code to create a repository from a template
+GITHUB_REPO_TEMPLATE=rhtap-templates
 GITHUB_REPO_DEMO_NAME=rhtap-buildpack-demo-1
 GITHUB_REPO_DEMO_TITLE="RHTAP Buildpack Demo 1"
 BRANCH=main
@@ -42,8 +42,6 @@ PAC_NAME=$COMPONENT_NAME
 PAC_YAML_FILE=".tekton/$GITHUB_REPO_DEMO_NAME-push.yaml"
 TENANT_NAMESPACE=<YOUR_TENANT_NAMESPACE>
 REGISTRY_URL=quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$GITHUB_REPO_DEMO_NAME/$COMPONENT_NAME
-
-# NOT YET TESTED: REGISTRY_URL=quay.io/$GITHUB_ORG_NAME/$GITHUB_REPO_DEMO_NAME !!
 ----
 
 == HowTo
@@ -172,6 +170,11 @@ EOF
 kubectl delete application/$GITHUB_REPO_DEMO_NAME
 rm $BRANCH.zip; rm -r $GITHUB_REPO_TEMPLATE-$BRANCH
 ----
+
+== TODO
+
+- Change the `gh create` command to create a repository from a template
+- Try to make a test using our own quay.io credentials and repository using REGISTRY_URL=quay.io/$GITHUB_ORG_NAME
 
 == Issue
 
