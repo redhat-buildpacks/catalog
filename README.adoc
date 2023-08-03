@@ -173,9 +173,9 @@ for entity in pods deployments routes services taskruns pipelineruns application
 
 * At this point, a default build will be started as the component created has not been yet customized. To achieve this, it is needed to execute the following additional
 steps manually:
-- Select for the `quarkus-hello` component `Manage Build pipelines`
+- To customize your component, it is needed to `Manage Build pipelines` from the component https://console.redhat.com/preview/hac/application-pipeline/workspaces/cmoullia/applications/rhtap-buildpack-demo-1/components[screen]
 - Within the popup windowd displayed, click on the button `Send PullRequest` and wait a few moment till the PR has ben sent to the Github repository
-- It is not needed to accept the PR as the project alrady contains a customized tekton folder
+- It is not needed to accept the PR as the project already contains a customized tekton folder
 - Close the popup window
 
 You can now open the `activity` and you will see that a custom build has been started for pull and push :-)
