@@ -32,7 +32,7 @@ Feel free to change them according to your GitHub organisation, tenant namespace
 [,bash]
 ----
 GITHUB_ORG_NAME=halkyonio
-GITHUB_REPO_TEMPLATE=rhtap-templates // TODO: Change the code to create a repository from a template
+GITHUB_REPO_TEMPLATE=rhtap-templates # TODO: Change the code to create a repository from a template
 GITHUB_REPO_DEMO_NAME=rhtap-buildpack-demo-1
 GITHUB_REPO_DEMO_TITLE="RHTAP Buildpack Demo 1"
 BRANCH=main
