@@ -58,31 +58,15 @@ To create a new GitHub repository and import the needed files, perform the follo
 [,bash]
 ----
 gh repo delete $GITHUB_ORG_NAME/$GITHUB_REPO_DEMO_NAME --yes
-gh repo create $GITHUB_ORG_NAME/$GITHUB_REPO_DEMO_NAME --public
+gh repo create --template https://github.com/$ORG_NAME/$REPO_TEMPLATE --clone $ORG_NAME/$REPO_DEMO_NAME --public
 
-rm -rf $GITHUB_REPO_DEMO_NAME; mkdir $GITHUB_REPO_DEMO_NAME
-cd $GITHUB_REPO_DEMO_NAME
+rm -rf $GITHUB_REPO_DEMO_NAME
+git clone https://github.com/$ORG_NAME/$REPO_DEMO_NAME.git
+cd $REPO_DEMO_NAME
 
-git init
-echo "## RHTAP Buildpack Demo 1" > README.md
-git add .
-
-echo "## Import runtime code"
-wget https://github.com/$GITHUB_ORG_NAME/$GITHUB_REPO_TEMPLATE/archive/$BRANCH.zip
-unzip $BRANCH.zip
-mv $GITHUB_REPO_TEMPLATE-$BRANCH/$COMPONENT_NAME/.mvn/ .
-mv $GITHUB_REPO_TEMPLATE-$BRANCH/$COMPONENT_NAME/* .
-
-echo "$GITHUB_REPO_TEMPLATE-$BRANCH/" > .gitignore
-echo "$BRANCH.zip" >> .gitignore
-echo "target/" >> .gitignore
-
-git add .
-git commit -m "Upload quarkus hello runtime"
-
-git branch -M main
-git remote add origin git@github.com:$GITHUB_ORG_NAME/$GITHUB_REPO_DEMO_NAME.git
-git push -u origin main
+#git branch -M main
+#git remote add origin git@github.com:$GITHUB_ORG_NAME/$GITHUB_REPO_DEMO_NAME.git
+#git push -u origin main
 ----
 
 * Test locally the quarkus project and access using curl (or httpie) the endpoints (optional)
@@ -99,9 +83,10 @@ http :8080/hello/greeting/charles
 
 [,bash]
 ----
-mkdir .tekton
 mv $GITHUB_REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml
+rm .tekton/template-push.yaml
 git add .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml
+git push
 ----
 
 * Customize the RHTAP PipelineRun
@@ -115,7 +100,8 @@ sed -i.bak "s/#TENANT_NAMESPACE#/$TENANT_NAMESPACE/g" $PAC_YAML_FILE
 sed -i.bak "s|#REGISTRY_URL#|$REGISTRY_URL|g" $PAC_YAML_FILE
 sed -i.bak "s|#BUILD_ID#|$BUILD_ID|g" $PAC_YAML_FILE
 rm $PAC_YAML_FILE.bak
-git commit -sm "Add the tekton push file" .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml; git push
+git commit -sm "Add the tekton push file" .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml
+git push
 ----
 
 * Create the following Application CR and Component CR
