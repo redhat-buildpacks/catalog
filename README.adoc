@@ -94,10 +94,10 @@ REGISTRY_URL=quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$REPO_DEMO_NAME/$CO
 # NOT YET TESTED: REGISTRY_URL=quay.io/$ORG_NAME/$REPO_DEMO_NAME !!
 
 sed -i.bak "s/#APPLICATION_NAME#/$APPLICATION_NAME/g" $PAC_YAML_FILE
-sed -i.bak "s/#COMPONENT_NAME#/"$COMPONENT_NAME"/g" $PAC_YAML_FILE
-sed -i.bak "s/#PAC_NAME#/"$PAC_NAME"/g" $PAC_YAML_FILE
-sed -i.bak "s/#TENANT_NAMESPACE#/"$TENANT_NAMESPACE"/g $PAC_YAML_FILE
-sed -i.bak "s/#REGISTRY_URL#/"$REGISTRY_URL"/g" $PAC_YAML_FILE
+sed -i.bak "s/#COMPONENT_NAME#/$COMPONENT_NAME/g" $PAC_YAML_FILE
+sed -i.bak "s/#PAC_NAME#/$PAC_NAME/g" $PAC_YAML_FILE
+sed -i.bak "s/#TENANT_NAMESPACE#/$TENANT_NAMESPACE/g $PAC_YAML_FILE
+sed -i.bak "s/#REGISTRY_URL#/$REGISTRY_URL/g" $PAC_YAML_FILE
 rm $PAC_YAML_FILE.bak
 git commit -sm "Add the tekton push file" .tekton/$REPO_DEMO_NAME-push.yaml; git push
 cd ..
