@@ -147,13 +147,13 @@ EOF
 
 [,bash]
 ----
-for entity in pods deployments routes services taskruns pipelineruns applications components snapshotenvironmentbinding.appstudio.redhat.com componentdetectionquery.appstudio.redhat.com; do count=$(kubectl -n $NS get "$entity" -o name | wc -l); echo "$count $entity"; done | sort -n
+for entity in pods deployments routes services taskruns pipelineruns applications components snapshotenvironmentbinding.appstudio.redhat.com componentdetectionquery.appstudio.redhat.com; do count=$(kubectl -n $TENANT_NAMESPACE get "$entity" -o name | wc -l); echo "$count $entity"; done | sort -n
 ----
 
 * At this point, a default build will be started as the component created has not been yet customized. To achieve this, it is needed to execute the following additional
 steps manually:
 - To customize your component, it is needed to `Manage Build pipelines` from the component https://console.redhat.com/preview/hac/application-pipeline/workspaces/cmoullia/applications/rhtap-buildpack-demo-1/components[screen]
-- Within the popup window displayed, click on the button `Send PullRequest` and wait a few moment till the PR has ben sent to the Github repository
+- Within the popup window displayed, click on the button `Send PullRequest` and wait a few moment till the PR has been sent to the Github repository
 - It is not needed to accept the PR as the project already contains a customized tekton folder
 - Close the popup window
 
