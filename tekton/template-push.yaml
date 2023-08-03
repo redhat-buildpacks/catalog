@@ -14,7 +14,7 @@ metadata:
     appstudio.openshift.io/component: #COMPONENT_NAME# #TODO: changeme
     pipelines.appstudio.openshift.io/type: build
   name: #PAC_NAME# #TODO: changeme
-  namespace: cmoullia-tenant #TODO: changeme
+  namespace: #TENANT_NAMESPACE# #TODO: changeme
 spec:
   params:
     - name: dockerfile
@@ -25,7 +25,7 @@ spec:
       value: 5d
     - name: output-image
       # Example: quay.io/redhat-user-workloads/cmoullia-tenant/rhtap-buildpack-demo-1/quarkus-hello-1:8e532f04f5cd873acc57cf5d0514111af93a8b91
-      value: #REGISTRY_URL#/#COMPONENT_NAME#:build-{{revision}} #TODO: changeme
+      value: #REGISTRY_URL#:build-{{revision}} #TODO: changeme
     - name: path-context
       value: .
     - name: revision

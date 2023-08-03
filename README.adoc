@@ -72,6 +72,7 @@ cd ..
 ----
 
 - Create a `.Tekton` folder
+
 [,bash]
 ----
 cd $REPO_DEMO_NAME
@@ -81,19 +82,22 @@ git add .tekton/$REPO_DEMO_NAME-push.yaml
 ----
 
 * Customize the RHTAP PipelineRun
+
 [,bash]
 ----
 APPLICATION_NAME=$REPO_DEMO_NAME
 COMPONENT_NAME="quarkus-hello"
 PAC_NAME=$COMPONENT_NAME-$(openssl rand -base64 4 | tr -dc 'a-zA-Z0-9' | cut -c1-5)
 PAC_YAML_FILE=".tekton/$REPO_DEMO_NAME-push.yaml"
-# REGISTRY_URL=quay.io/redhat-user-workloads/cmoullia-tenant/$REPO_DEMO_NAME
-REGISTRY_URL=quay.io/$ORG_NAME/$REPO_DEMO_NAME
+TENANT_NAMESPACE=<YOUR_TENANT_NAMESPACE>
+REGISTRY_URL=quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$REPO_DEMO_NAME/$COMPONENT_NAME
+# NOT YET TESTED: REGISTRY_URL=quay.io/$ORG_NAME/$REPO_DEMO_NAME !!
 
 sed -i.bak "s/#APPLICATION_NAME#/$APPLICATION_NAME/g" $PAC_YAML_FILE
 sed -i.bak "s/#COMPONENT_NAME#/"$COMPONENT_NAME"/g" $PAC_YAML_FILE
 sed -i.bak "s/#PAC_NAME#/"$PAC_NAME"/g" $PAC_YAML_FILE
-sed -i.bak "s/#REGISTRY_URL#/"$REGISTRY_URL"/g"  $PAC_YAML_FILE
+sed -i.bak "s/#TENANT_NAMESPACE#/"$TENANT_NAMESPACE"/g $PAC_YAML_FILE
+sed -i.bak "s/#REGISTRY_URL#/"$REGISTRY_URL"/g" $PAC_YAML_FILE
 rm $PAC_YAML_FILE.bak
 git commit -sm "Add the tekton push file" .tekton/$REPO_DEMO_NAME-push.yaml; git push
 cd ..
@@ -146,7 +150,24 @@ spec:
 EOF
 ----
 
+- To work around the issue of the full image path not supported by lifecycle (and google-containr), path the secret
+
+[,bash]
+----
+CFG=$(cat <<EOF
+{"auths":{"quay.io":{"auth":"cmVkaGF0LXVzZXItd29ya2xvYWRzK2Ntb3VsbGlhLXRlbmFudHJodGFwLWJ1aWxkcGFjay1kZW1vLTFxdWFya3VzLWhlbGxvOkE0NjFMWkw0UVlCV0VPWFhNRlRYMEpVQjY3TTBTSjlFNjQ4QkE5Q0Q3OEo1M0tEMTBRUEdCMEdJMTlaRkFGNTQ="}}}
+EOF
+)
+
+SECRET_NAME=$COMPONENT_NAME
+TENANT_NAMESPACE="cmoullia-tenant"
+PATCH_STRING="[{'op': 'replace', 'path': '/data/.dockerconfigjson', 'value': '$BASE64_ENCODED_VALUE'}]"
+
+kubectl get secret $SECRET_NAME -n $TENANT_NAMESPACE$$ -o json | jq --arg new_val "$(echo -n $CFG | base64)" '.data[".dockerconfigjson"]=$new_val' | kubectl apply -f -
+----
+
 - Cleaning
+
 [,bash]
 ----
 kubectl delete application/$REPO_DEMO_NAME
