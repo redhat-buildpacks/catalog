@@ -15,8 +15,36 @@ endif::[]
 
 This project contains the code source needed to demo buildpack on RHTAP such as:
 
-* Quarkus REST service axposing a Hello endpoint `/hello` and `+/hello/greeting/{name}+`
+* Quarkus REST service exposing a Hello endpoint `/hello` and `+/hello/greeting/{name}+`
 * Tekton PipelineRun able to build a container image using buildpack.
+
+== Prerequisite
+
+- Have access to RHTAP: https://console.redhat.com/preview/hac/
+- Have kubectl and oc clients installed on your machine
+- Switched to the kubernetes context of appstudio
+
+== Env variables
+
+In order to play/execute the commands defined hereafter, it is needed to define some env variables. 
+Feel free to change them according to your GitHub organisation, tenant namespace, etc
+
+[,bash]
+----
+GITHUB_ORG_NAME=halkyonio
+GITHUB_REPO_TEMPLATE=rhtap-templates // TODO: Change the code to create a repository from a template
+GITHUB_REPO_DEMO_NAME=rhtap-buildpack-demo-1
+GITHUB_REPO_DEMO_TITLE="RHTAP Buildpack Demo 1"
+BRANCH=main
+APPLICATION_NAME=$GITHUB_REPO_DEMO_NAME
+COMPONENT_NAME="quarkus-hello"
+PAC_NAME=$COMPONENT_NAME
+PAC_YAML_FILE=".tekton/$GITHUB_REPO_DEMO_NAME-push.yaml"
+TENANT_NAMESPACE=<YOUR_TENANT_NAMESPACE>
+REGISTRY_URL=quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$GITHUB_REPO_DEMO_NAME/$COMPONENT_NAME
+
+# NOT YET TESTED: REGISTRY_URL=quay.io/$GITHUB_ORG_NAME/$GITHUB_REPO_DEMO_NAME !!
+----
 
 == HowTo
 
@@ -24,31 +52,28 @@ To create a new GitHub repository and import the needed files, perform the follo
 
 * Git auth
 `gh auth login --with-token <YOUR_GITHUB_TOKEN>`
+
 * Create a GitHub repository
 
 [,bash]
 ----
-ORG_NAME=halkyonio
-REPO_TEMPLATE=rhtap-templates
-REPO_DEMO_NAME=rhtap-buildpack-demo-1
-REPO_DEMO_TITLE="RHTAP Buildpack Demo 1"
+gh repo delete $GITHUB_ORG_NAME/$GITHUB_REPO_DEMO_NAME --yes
+gh repo create $GITHUB_ORG_NAME/$GITHUB_REPO_DEMO_NAME --public
 
-gh repo delete $ORG_NAME/$REPO_DEMO_NAME --yes
-gh repo create $ORG_NAME/$REPO_DEMO_NAME --public
+rm -rf $GITHUB_REPO_DEMO_NAME; mkdir $GITHUB_REPO_DEMO_NAME
+cd $GITHUB_REPO_DEMO_NAME
 
-rm -rf $REPO_DEMO_NAME; mkdir $REPO_DEMO_NAME; cd $REPO_DEMO_NAME
 git init
 echo "## RHTAP Buildpack Demo 1" > README.md
 git add .
 
-## Import runtime code
-BRANCH=main
-wget https://github.com/$ORG_NAME/$REPO_TEMPLATE/archive/$BRANCH.zip
+echo "## Import runtime code"
+wget https://github.com/$GITHUB_ORG_NAME/$GITHUB_REPO_TEMPLATE/archive/$BRANCH.zip
 unzip $BRANCH.zip
-mv $REPO_TEMPLATE-$BRANCH/$COMPONENT_NAME/.mvn/ .
-mv $REPO_TEMPLATE-$BRANCH/$COMPONENT_NAME/* .
+mv $GITHUB_REPO_TEMPLATE-$BRANCH/$COMPONENT_NAME/.mvn/ .
+mv $GITHUB_REPO_TEMPLATE-$BRANCH/$COMPONENT_NAME/* .
 
-echo "$REPO_TEMPLATE-$BRANCH/" > .gitignore
+echo "$GITHUB_REPO_TEMPLATE-$BRANCH/" > .gitignore
 echo "$BRANCH.zip" >> .gitignore
 echo "target/" >> .gitignore
 
@@ -56,70 +81,56 @@ git add .
 git commit -m "Upload quarkus hello runtime"
 
 git branch -M main
-git remote add origin git@github.com:$ORG_NAME/$REPO_DEMO_NAME.git
+git remote add origin git@github.com:$GITHUB_ORG_NAME/$GITHUB_REPO_DEMO_NAME.git
 git push -u origin main
-cd ..
 ----
+
+* Test locally the quarkus project and access using curl (or httpie) the endpoints (optional)
 
 [,bash]
 ----
-cd $REPO_DEMO_NAME
 mvn clean compile; mvn quarkus:dev
 
 http :8080/hello
 http :8080/hello/greeting/charles
-cd ..
 ----
 
-- Create a `.Tekton` folder
+* Create a `.Tekton` folder
 
 [,bash]
 ----
-cd $REPO_DEMO_NAME
 mkdir .tekton
-mv $REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$REPO_DEMO_NAME-push.yaml
-git add .tekton/$REPO_DEMO_NAME-push.yaml
+mv $GITHUB_REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml
+git add .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml
 ----
 
 * Customize the RHTAP PipelineRun
 
 [,bash]
 ----
-APPLICATION_NAME=$REPO_DEMO_NAME
-COMPONENT_NAME="quarkus-hello"
-#-$(openssl rand -base64 4 | tr -dc 'a-zA-Z0-9' | cut -c1-5)
-PAC_NAME=$COMPONENT_NAME
-PAC_YAML_FILE=".tekton/$REPO_DEMO_NAME-push.yaml"
-TENANT_NAMESPACE=<YOUR_TENANT_NAMESPACE>
-REGISTRY_URL=quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$REPO_DEMO_NAME/$COMPONENT_NAME
-# NOT YET TESTED: REGISTRY_URL=quay.io/$ORG_NAME/$REPO_DEMO_NAME !!
-
 sed -i.bak "s/#APPLICATION_NAME#/$APPLICATION_NAME/g" $PAC_YAML_FILE
 sed -i.bak "s/#COMPONENT_NAME#/$COMPONENT_NAME/g" $PAC_YAML_FILE
 sed -i.bak "s/#PAC_NAME#/$PAC_NAME/g" $PAC_YAML_FILE
 sed -i.bak "s/#TENANT_NAMESPACE#/$TENANT_NAMESPACE/g" $PAC_YAML_FILE
 sed -i.bak "s|#REGISTRY_URL#|$REGISTRY_URL|g" $PAC_YAML_FILE
 rm $PAC_YAML_FILE.bak
-git commit -sm "Add the tekton push file" .tekton/$REPO_DEMO_NAME-push.yaml; git push
-cd ..
+git commit -sm "Add the tekton push file" .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml; git push
 ----
 
-- Import it as documented here: https://redhat-appstudio.github.io/docs.appstudio.io/Documentation/main/how-to-guides/Import-code/proc_importing_code/
+* Create the following Application CR and Component CR
 
-- Alternatively, create the following Application CR and Component CR
 [,bash]
 ----
-TENANT_NAMESPACE=<YOUR_TENANT_NAMESPACE>
 cat <<EOF | kubectl apply -n $TENANT_NAMESPACE -f -
 ---
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Application
 metadata:
-  name: $REPO_DEMO_NAME
+  name: $GITHUB_REPO_DEMO_NAME
 spec:
   appModelRepository:
     url: ""
-  displayName: $REPO_DEMO_NAME
+  displayName: $GITHUB_REPO_DEMO_NAME
   gitOpsRepository:
     url: ""
 ---
@@ -133,9 +144,9 @@ metadata:
     image.redhat.com/generate: '{"visibility":"public"}'
   name: $COMPONENT_NAME
 spec:
-  application: $REPO_DEMO_NAME
+  application: $GITHUB_REPO_DEMO_NAME
   componentName: $COMPONENT_NAME
-  #containerImage: quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$REPO_DEMO_NAME/$COMPONENT_NAME
+  #containerImage: quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$GITHUB_REPO_DEMO_NAME/$COMPONENT_NAME
   replicas: 1
   resources:
     requests:
@@ -147,12 +158,31 @@ spec:
       devfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/devfile.yaml
       #dockerfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/src/main/docker/Dockerfile.jvm.staged
       revision: main
-      url: https://github.com/halkyonio/$REPO_DEMO_NAME.git
+      url: https://github.com/halkyonio/$GITHUB_REPO_DEMO_NAME.git
   targetPort: 8081
 EOF
 ----
 
-- To work around the issue of the full image path not supported by lifecycle (and google-containr), path the secret
+* Alternatively, Import it as documented here: https://redhat-appstudio.github.io/docs.appstudio.io/Documentation/main/how-to-guides/Import-code/proc_importing_code/
+
+* Cleaning
+
+[,bash]
+----
+kubectl delete application/$GITHUB_REPO_DEMO_NAME
+rm $BRANCH.zip; rm -r $GITHUB_REPO_TEMPLATE-$BRANCH
+----
+
+== Issue
+
+=== Full image path not supported
+
+The lifecycle component and most probably google container library (used by lifecycle to access the registry) do not support such advanced feature: https://kubernetes.io/docs/concepts/containers/images/#kubelet-credential-provider
+The consequence is that if several secrets are attached to the `appstudio-pipeline` service account and subsequently by the pod running lifecycle, then
+lifecycle, at the analysis step, will raise an issue if it doesn't get as first entry of the `auths:` config file (from mounted secrets) the full image path matching the image name declared
+as output image.
+
+To work around the issue of the full image path not supported by lifecycle (and google-containr), path the secret
 
 [,bash]
 ----
@@ -167,20 +197,3 @@ PATCH_STRING="[{'op': 'replace', 'path': '/data/.dockerconfigjson', 'value': '$B
 
 kubectl get secret $SECRET_NAME -n $TENANT_NAMESPACE$$ -o json | jq --arg new_val "$(echo -n $CFG | base64)" '.data[".dockerconfigjson"]=$new_val' | kubectl apply -f -
 ----
-
-- Cleaning
-
-[,bash]
-----
-kubectl delete application/$REPO_DEMO_NAME
-rm $BRANCH.zip; rm -r $REPO_TEMPLATE-$BRANCH
-----
-
-== Issue
-
-=== Full image path not supported
-
-The lifecycle component and most probably google container library (used by lifecycle to access the registry) do not support such advanced feature: https://kubernetes.io/docs/concepts/containers/images/#kubelet-credential-provider
-The consequence is that if several secrets are attached to the `appstudio-pipeline` service account and subsequently by the pod running lifecycle, then
-lifecycle, at the analysis step, will raise an issue if it doesn't get as first entry of the `auths:` config file (from mounted secrets) the full image path matching the image name declared
-as output image.
