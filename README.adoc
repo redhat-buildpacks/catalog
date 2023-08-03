@@ -23,6 +23,7 @@ This project contains the code source needed to demo buildpack on RHTAP such as:
 - Have access to RHTAP: https://console.redhat.com/preview/hac/
 - Have kubectl and oc clients installed on your machine
 - Switched to the kubernetes context of appstudio
+- Add the `AppStudio` GitHub application to your GitHubOrg and select it to be used for all the repositories
 
 == Env variables
 
