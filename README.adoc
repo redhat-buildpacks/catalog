@@ -169,9 +169,8 @@ kubectl delete application/$GITHUB_REPO_DEMO_NAME
 rm $BRANCH.zip; rm -r $GITHUB_REPO_TEMPLATE-$BRANCH
 ----
 
-== TODO
+== Todo
 
-- Change the `gh create` command to create a repository from a template
 - Try to make a test using our own quay.io credentials and repository using REGISTRY_URL=quay.io/$GITHUB_ORG_NAME
 
 == Issue
