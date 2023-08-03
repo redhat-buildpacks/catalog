@@ -87,7 +87,8 @@ git add .tekton/$REPO_DEMO_NAME-push.yaml
 ----
 APPLICATION_NAME=$REPO_DEMO_NAME
 COMPONENT_NAME="quarkus-hello"
-PAC_NAME=$COMPONENT_NAME-$(openssl rand -base64 4 | tr -dc 'a-zA-Z0-9' | cut -c1-5)
+#-$(openssl rand -base64 4 | tr -dc 'a-zA-Z0-9' | cut -c1-5)
+PAC_NAME=$COMPONENT_NAME
 PAC_YAML_FILE=".tekton/$REPO_DEMO_NAME-push.yaml"
 TENANT_NAMESPACE=<YOUR_TENANT_NAMESPACE>
 REGISTRY_URL=quay.io/redhat-user-workloads/$TENANT_NAMESPACE/$REPO_DEMO_NAME/$COMPONENT_NAME
