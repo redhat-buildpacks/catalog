@@ -129,6 +129,7 @@ metadata:
     #applicationFailCounter: "0"
     #appstudio.openshift.io/component-initial-build: processed
     #appstudio.openshift.io/pac-provision: done
+    image.redhat.com/generate: '{"visibility":"public"}'
   name: $COMPONENT_NAME
 spec:
   application: $REPO_DEMO_NAME
