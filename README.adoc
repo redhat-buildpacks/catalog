@@ -79,11 +79,11 @@ http :8080/hello
 http :8080/hello/greeting/charles
 ----
 
-* Create a `.Tekton` folder
+* Rename the PipelineRun template file
 
 [,bash]
 ----
-mv $GITHUB_REPO_TEMPLATE-$BRANCH/tekton/template-push.yaml .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml
+mv .tekton/template-push.yaml .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml
 rm .tekton/template-push.yaml
 git add .tekton/$GITHUB_REPO_DEMO_NAME-push.yaml
 git push
