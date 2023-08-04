@@ -7,6 +7,7 @@ metadata:
     build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     appstudio.openshift.io/request: "configure-pac"
+    appstudio.openshift.io/pac-provision: request
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-event: '[pull_request, push]'
     pipelinesascode.tekton.dev/on-target-branch: '[main]'
@@ -14,7 +15,7 @@ metadata:
     appstudio.openshift.io/application: #APPLICATION_NAME#  #TODO: changeme
     appstudio.openshift.io/component: #COMPONENT_NAME# #TODO: changeme
     pipelines.appstudio.openshift.io/type: build
-    rhtap.snowdrop.dev/build: test-#BUILD_ID#
+    rhtap.snowdrop.dev/build: "test-#BUILD_ID#"
   name: #PAC_NAME# #TODO: changeme
   namespace: #TENANT_NAMESPACE# #TODO: changeme
 spec:
