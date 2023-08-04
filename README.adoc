@@ -19,4 +19,4 @@ This template project contains the code source needed to build runtimes using Te
 * Tekton PipelineRun able to build a container image:
   - RHTAP Buildpack pipeline: tekton/pipelinerun-rhtap-buildpack.yaml
 
-IMPORTANT: Instructions to play with the PipelineRuns on RHTAP are available within this https://github.com/redhat-buildpacks/testing/tree/main#4-rhtapgit [project].
+IMPORTANT: Instructions to play with the PipelineRuns on RHTAP are available within this https://github.com/redhat-buildpacks/testing/tree/main#4-rhtap[project].
