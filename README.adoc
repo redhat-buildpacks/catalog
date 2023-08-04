@@ -16,7 +16,8 @@ endif::[]
 This template project contains the code source needed to build runtimes using Tekton pipelines:
 
 * Quarkus REST service exposing a Hello endpoint `/hello` and `+/hello/greeting/{name}+`
-* Tekton PipelineRun able to build a container image (buildpack).
+* Tekton PipelineRun able to build a container image:
+  - RHTAP Buildpak pipeline: tekton/pipelinerun-rhtap-buildpack.yaml
 
 == Prerequisite
 
