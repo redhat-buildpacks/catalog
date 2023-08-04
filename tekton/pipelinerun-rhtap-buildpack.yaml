@@ -9,15 +9,15 @@ metadata:
     appstudio.openshift.io/request: "configure-pac"
     appstudio.openshift.io/pac-provision: request
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-event: '[pull_request, push]'
+    pipelinesascode.tekton.dev/on-event: '[#EVENT_TYPE#]' # >> changeme
     pipelinesascode.tekton.dev/on-target-branch: '[main]'
   labels:
-    appstudio.openshift.io/application: #APPLICATION_NAME#  #TODO: changeme
-    appstudio.openshift.io/component: #COMPONENT_NAME# #TODO: changeme
+    appstudio.openshift.io/application: #APPLICATION_NAME#  # >> changeme
+    appstudio.openshift.io/component: #COMPONENT_NAME# # >> changeme
     pipelines.appstudio.openshift.io/type: build
-    rhtap.snowdrop.dev/build: "test-#BUILD_ID#"
-  name: #PAC_NAME# #TODO: changeme
-  namespace: #TENANT_NAMESPACE# #TODO: changeme
+    rhtap.snowdrop.dev/build: "test-#BUILD_ID#" # >> changeme
+  name: #PAC_NAME# # >> changeme
+  namespace: #TENANT_NAMESPACE# # >> changeme
 spec:
   params:
     - name: dockerfile
@@ -28,7 +28,7 @@ spec:
       value: 5d
     - name: output-image
       # Example: quay.io/redhat-user-workloads/cmoullia-tenant/rhtap-buildpack-demo-1/quarkus-hello-1:8e532f04f5cd873acc57cf5d0514111af93a8b91
-      value: #REGISTRY_URL#:build-{{revision}} #TODO: changeme
+      value: #REGISTRY_URL#:build-{{revision}} # >> changeme
     - name: path-context
       value: .
     - name: revision
