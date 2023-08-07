@@ -277,7 +277,9 @@ spec:
         workspaces:
           - name: source
             workspace: workspace
-      #  TODO: What is the purpose of such step
+      # This, which was using skopeo tool is not needed anymore as it is done by the EC: https://issues.redhat.com/browse/HACBS-2401
+      # which define the list of the required tasks: https://github.com/enterprise-contract/ec-policies/blob/main/data/required_tasks.yml#L4-L19
+      #
       #- name: label-check
       #  runAfter:
       #  - inspect-image
@@ -292,6 +294,7 @@ spec:
       #  workspaces:
       #  - name: workspace
       #    workspace: workspace
+      #
       #  TODO: What is the purpose of such step
       #- name: optional-label-check
       #  params:
@@ -310,7 +313,15 @@ spec:
       #  workspaces:
       #  - name: workspace
       #    workspace: workspace
-      #  TODO: What is the purpose of such step
+      #
+
+      #- name: deprecated-base-image-check
+      ## The deprecated-image-check checks for deprecated images that are no longer maintained and prone to security issues.
+      ## It accomplishes this by verifying the data using Pyxis to query container image data and running Conftest using the supplied conftest policy.
+      ## Conftest is an open-source tool that provides a way to enforce policies written in a high-level declarative language called Rego.
+      ##
+      ## Task definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/deprecated-image-check/0.2#deprecated-image-check-task
+      ##
       #- name: deprecated-base-image-check
       #  params:
       #  - name: BASE_IMAGES_DIGESTS
@@ -326,6 +337,7 @@ spec:
       #  workspaces:
       #  - name: test-ws
       #    workspace: workspace
+
       - name: clair-scan
         params:
           - name: image-digest
