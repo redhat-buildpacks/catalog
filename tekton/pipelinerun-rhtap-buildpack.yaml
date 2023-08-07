@@ -151,6 +151,8 @@ spec:
         value: $(tasks.clone-repository.results.commit)
     tasks:
       - name: init
+        # Goal: Initialize Pipeline Task, include flags for rebuild and auth. Generates image repository secret used by the PipelineRun.
+        # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/init/0.1
         params:
           - name: image-url
             value: $(params.output-image)
@@ -168,6 +170,8 @@ spec:
           bundle: quay.io/redhat-appstudio-tekton-catalog/task-init:0.1@sha256:26586a7ef08c3e86dfdaf0a5cc38dd3d70c4c02db1331b469caaed0a0f5b3d86
           name: init
       - name: clone-repository
+        # Goal: clone a repo from the provided url into the output Workspace. By default the repo will be cloned into the root of your Workspace.
+        # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/git-clone/0.1
         params:
           - name: url
             value: $(params.git-url)
@@ -188,24 +192,28 @@ spec:
             workspace: workspace
           - name: basic-auth
             workspace: git-auth
-      - name: prefetch-dependencies
-        params:
-          - name: input
-            value: $(params.prefetch-input)
-        runAfter:
-          - clone-repository
-        taskRef:
-          bundle: quay.io/redhat-appstudio-tekton-catalog/task-prefetch-dependencies:0.1@sha256:7851457b29fc187c8027fd53ed4f54c6e3a2e9fb0fd85da058022c6fd4dce1b1
-          name: prefetch-dependencies
-        when:
-          - input: $(params.hermetic)
-            operator: in
-            values:
-              - "true"
-        workspaces:
-          - name: source
-            workspace: workspace
+      #- name: prefetch-dependencies
+      #  # Goal: Use Cachi2 tool to prefetch build dependencies. Not needed for buildpack
+      #  # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/prefetch-dependencies/0.1
+      #  params:
+      #    - name: input
+      #      value: $(params.prefetch-input)
+      #  runAfter:
+      #    - clone-repository
+      #  taskRef:
+      #    bundle: quay.io/redhat-appstudio-tekton-catalog/task-prefetch-dependencies:0.1@sha256:7851457b29fc187c8027fd53ed4f54c6e3a2e9fb0fd85da058022c6fd4dce1b1
+      #    name: prefetch-dependencies
+      #  when:
+      #    - input: $(params.hermetic)
+      #      operator: in
+      #      values:
+      #        - "true"
+      #  workspaces:
+      #    - name: source
+      #      workspace: workspace
       - name: build-container
+        # Goal: Perform a buildpack build using the an updated version of the Task Buildpack phases
+        # Definition:https://github.com/redhat-buildpacks/testing/blob/02482ceac7e44583ac84d26565f3c0480f5192b9/k8s/tekton/buildpacks-phases.yml
         params:
           - name: IMAGE
             value: $(params.output-image)
@@ -259,6 +267,8 @@ spec:
             workspace: workspace
 
       - name: inspect-image
+        # Goal: uses Skopeo to inspect and analyze manifest data from the target source image of a container if it is built from scratch
+        # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/inspect-image/0.1
         params:
           - name: IMAGE_URL
             value: $(tasks.build-container.results.IMAGE_URL)
@@ -277,7 +287,7 @@ spec:
         workspaces:
           - name: source
             workspace: workspace
-      # This, which was using skopeo tool is not needed anymore as it is done by the EC: https://issues.redhat.com/browse/HACBS-2401
+      # Goal: This task, which was done using skopeo tool, is not needed anymore as it is done by the EC: https://issues.redhat.com/browse/HACBS-2401
       # which define the list of the required tasks: https://github.com/enterprise-contract/ec-policies/blob/main/data/required_tasks.yml#L4-L19
       #
       #- name: label-check
@@ -316,11 +326,11 @@ spec:
       #
 
       #- name: deprecated-base-image-check
-      ## The deprecated-image-check checks for deprecated images that are no longer maintained and prone to security issues.
+      ## Goal: The deprecated-image-check checks for deprecated images that are no longer maintained and prone to security issues.
       ## It accomplishes this by verifying the data using Pyxis to query container image data and running Conftest using the supplied conftest policy.
       ## Conftest is an open-source tool that provides a way to enforce policies written in a high-level declarative language called Rego.
       ##
-      ## Task definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/deprecated-image-check/0.2#deprecated-image-check-task
+      ## Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/deprecated-image-check/0.2#deprecated-image-check-task
       ##
       #- name: deprecated-base-image-check
       #  params:
@@ -339,6 +349,8 @@ spec:
       #    workspace: workspace
 
       - name: clair-scan
+        # Goal: performs vulnerability scanning using Clair, an open source tool for performing static analysis on container images.
+        # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/clair-scan/0.1
         params:
           - name: image-digest
             value: $(tasks.build-container.results.IMAGE_DIGEST)
@@ -355,6 +367,8 @@ spec:
             values:
               - "false"
       - name: sast-snyk-check
+        # Goal: Uses Snyk Code tool to perform Static Application Security Testing (SAST) for Snyk, a popular cloud-native application security platform
+        # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/sast-snyk-check/0.1
         params:
           - name: SNYK_SECRET
             value: $(params.snyk-secret)
@@ -376,6 +390,8 @@ spec:
           - name: workspace
             workspace: workspace
       - name: clamav-scan
+        # Goal: Scans files for viruses and other malware using the ClamAV antivirus scanner
+        # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/clamav-scan/0.1
         params:
           - name: image-digest
             value: $(tasks.build-container.results.IMAGE_DIGEST)
@@ -392,6 +408,8 @@ spec:
             values:
               - "true"
       - name: sbom-json-check
+        # Goal: The sbom-json-check task verifies the integrity and security of a Software Bill of Materials (SBOM) file in JSON format using the CyloneDX tool.
+        # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/sbom-json-check/0.1
         params:
           - name: IMAGE_URL
             value: $(tasks.build-container.results.IMAGE_URL)
@@ -400,7 +418,7 @@ spec:
         runAfter:
           - build-container
         taskRef:
-          bundle: quay.io/redhat-appstudio-tekton-catalog/task-sbom-json-check:0.1@sha256:0228d0cfc86a1b3f788afdffe36e5ca2b357be00d73a5c97a0519f870f8c485d
+          bundle: quay.io/redhat-appstudio-tekton-catalog/task-sbom-json-check:0.1@sha256:397cb2fb20f413dec9653134231bec86edb80806a3441081fbf473677fc40917
           name: sbom-json-check
         when:
           - input: $(params.skip-checks)
