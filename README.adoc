@@ -1,4 +1,4 @@
-= RHTAP Templates
+= Tekton and Shipwright templates
 :icons: font
 :revdate: {docdate}
 :toc: left
