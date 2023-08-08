@@ -407,7 +407,7 @@ spec:
           - input: $(params.skip-checks)
             operator: in
             values:
-              - "true"
+              - "false"
       - name: sbom-json-check
         # Goal: The sbom-json-check task verifies the integrity and security of a Software Bill of Materials (SBOM) file in JSON format using the CyloneDX tool.
         # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/sbom-json-check/0.1
