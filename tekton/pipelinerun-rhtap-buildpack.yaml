@@ -41,6 +41,7 @@ spec:
           - input: $(params.enable-sbom)
             operator: in
             values: ["true"]
+        params:
           - name: GRYPE_IMAGE
             value: anchore/grype:v0.65.1
           - name: ARGS
