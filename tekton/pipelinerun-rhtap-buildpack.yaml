@@ -236,12 +236,11 @@ spec:
           - name: SOURCE_SUBPATH
             value: "" #getting-started
           - name: CNB_BUILDER_IMAGE
-            value: paketobuildpacks/builder:0.1.361-tiny #${BUILDER_IMAGE}
+            value: paketobuildpacks/builder-jammy-tiny:0.0.176 #${BUILDER_IMAGE}
           - name: CNB_LIFECYCLE_IMAGE
-            value: buildpacksio/lifecycle:0.16.3 #${LIFECYCLE_IMAGE}
-            #value: buildpacksio/lifecycle:0.17.0-rc.3 - CAN BE USED TO DEBUG REGISTRY ISSUES
+            value: buildpacksio/lifecycle:0.17.0 #${LIFECYCLE_IMAGE}
           - name: RUN_IMAGE
-            value: paketobuildpacks/run:tiny #${RUN_IMAGE}
+            value: paketobuildpacks/run-jammy-tiny:latest #${RUN_IMAGE}
           - name: ENV_VARS
             value:
               - BP_NATIVE_IMAGE=false
