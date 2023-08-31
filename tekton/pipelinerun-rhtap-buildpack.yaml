@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   annotations:
-    build.appstudio.openshift.io/repo: 'https://github.com/ch007m/tekton-pac?rev={{revision}}'
+    build.appstudio.openshift.io/repo: 'https://github.com/#GITHUB_ORG_NAME#/#GITHUB_REPO_NAME#?rev={{revision}}' # >> changeme
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
