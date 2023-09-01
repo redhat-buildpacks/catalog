@@ -65,7 +65,8 @@ spec:
 
         if echo $IMG_MANIFEST | jq -e '.Labels | has("'${EXT_LABEL_1}'") and has("'${EXT_LABEL_2}'")' > /dev/null; then
           echo "The builder image ${PARAM_BUILDER_IMAGE} has the labels:"
-          echo "$EXT_LABEL_1:$EXT_LABEL_2" | tee "$(results.extensionLabels.path)"
+          echo "\n"
+          echo -n "$EXT_LABEL_1:$EXT_LABEL_2" | tee "$(results.extensionLabels.path)"
         else
           echo "The builder image does not have extensions labels defined !"
         fi
