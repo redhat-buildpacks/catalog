@@ -4,8 +4,10 @@
 
 This `Task` will inspect a Buildpacks builder image using the skopeo tool
 to find if the image includes the labels: `io.buildpacks.extension.layers` and `io.buildpacks.buildpack.order-extensions`.
+
 If this is the case, then, you can use the `results.extensionLabels` within your PipelineRun or TaskRun to
 trigger a build using either the `buildpacks extension` Task or the `buildpacks` Task.
+
 Additionally, the CNB USER ID and CNB GROUP ID of the image will be exported as `results`: uid and gid.
 
 
