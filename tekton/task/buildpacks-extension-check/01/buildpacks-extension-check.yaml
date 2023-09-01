@@ -1,0 +1,77 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: buildpacks-extension-check
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.45.0"
+    tekton.dev/categories: Image Build
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "Buildpacks extensions check"
+    tekton.dev/platforms: "linux/amd64"
+
+spec:
+  description: >-
+    This Task will scan a Buildpacks builder image to determine if it contains extensions
+    using the labels "io.buildpacks.extension.layers" and "io.buildpacks.buildpack.order-extensions"
+    Next, it will get the CNB USER_ID and CNB GROUP_ID and store them as results
+
+  params:
+    - name: userHome
+      description: Absolute path to the user's home directory.
+      type: string
+      default: "/tekton/home"
+    - name: verbose
+      description: Log the commands that are executed during `git-clone`'s operation.
+      type: string
+      default: "true"
+    - name: CNB_BUILDER_IMAGE
+      description: CN Builder image to be scanned
+      type: string
+
+  results:
+    - name: builder_uid
+    - name: builder_gid
+    - name: extension_labels
+
+  steps:
+    - name: check-image-builder-extension
+      image: quay.io/ch007m/extended-skopeo
+      env:
+        - name: PARAM_USER_HOME
+          value: $(params.userHome)
+        - name: PARAM_VERBOSE
+          value: $(params.verbose)
+
+      script: |
+        #!/usr/bin/env bash
+        set -eu
+        
+        if [ "${PARAM_VERBOSE}" = "true" ] ; then
+          set -x
+        fi
+
+        BUILDER_IMAGE=$(params.CNB_BUILDER_IMAGE)
+        EXT_LABEL_1="io.buildpacks.extension.layers"
+        EXT_LABEL_2="io.buildpacks.buildpack.order-extensions"
+
+        IMG_MANIFEST=$(skopeo inspect --authfile /tekton/creds-secrets/dockercfg/.dockerconfigjson "docker://$BUILDER_IMAGE")
+
+        if echo $IMG_MANIFEST | jq -e '.Labels | has("'${EXT_LABEL_1}'") and has("'${EXT_LABEL_2}'")' > /dev/null; then
+          echo "The builder image $BUILDER_IMAGE has the labels:"
+          echo "$EXT_LABEL_1:$EXT_LABEL_2" | tee $(results.extension_labels.path)
+        else
+          echo "The builder image does not have extensions labels defined !"
+        fi
+
+        CNB_USER_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_USER_ID="))'  | cut -d '=' -f 2)
+        CNB_GROUP_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_GROUP_ID="))' | cut -d '=' -f 2)
+
+        #echo "We simulate the case where NO CNB UID/GID have been defined within the builder image: $BUILDER_IMAGE"
+        #echo "" | tee $(results.builder_uid.path)
+        #echo "" | tee $(results.builder_gid.path)
+
+        echo "We simulate the case where the CNB UID/GID have been defined within the builder image: $BUILDER_IMAGE"
+        echo ${CNB_USER_ID}  | tee $(results.builder_uid.path)
+        echo ${CNB_GROUP_ID} | tee $(results.builder_gid.path)
