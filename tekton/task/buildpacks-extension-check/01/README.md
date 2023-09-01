@@ -19,7 +19,7 @@ kubectl apply -f https://raw.githubusercontent.com/redhat-buildpacks/templates/m
 
 ## Parameters
 
-* **url**: Repository URL to clone from. (_required_)
+* **builderImage**: The Buildpacks Builder image to inspect. (_required_)
 * **verbose**: Log the commands that are executed during `buildpacks-extension-check`'s operation. (_default_: false)
 * **userHome**: The user's home directory. (_default_: "/tekton/home")
 
