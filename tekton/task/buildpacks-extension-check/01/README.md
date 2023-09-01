@@ -18,14 +18,14 @@ kubectl apply -f https://raw.githubusercontent.com/redhat-buildpacks/templates/m
 ## Parameters
 
 * **url**: Repository URL to clone from. (_required_)
-* **verbose**: Log the commands that are executed during `git-clone`'s operation. (_default_: true)
+* **verbose**: Log the commands that are executed during `buildpacks-extension-check`'s operation. (_default_: false)
 * **userHome**: The user's home directory. (_default_: "/tekton/home")
 
 ## Results
 
-* **commit**: The precise commit SHA that was fetched by this Task
-* **url**: The precise URL that was fetched by this Task
-* **committer-date**: The epoch timestamp of the commit that was fetched by this Task
+* **uid**: The UID of the user specified in the image
+* **gid**: The GID of the user specified in the image
+* **extensionLabels**: The extension labels of the builder image
 
 ## Platforms
 
@@ -35,7 +35,7 @@ The Task can be run on `linux/amd64` platforms.
 
 ### PipelineRun
 
-Create a PipelineRun and pass as prameter the buildpacks builder image to inspect
+Create a PipelineRun and pass as parameter a buildpacks builder image to inspect
 
 ```bash
 cat <<'EOF' | kubectl create -f -
