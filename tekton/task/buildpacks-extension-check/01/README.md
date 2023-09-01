@@ -53,7 +53,7 @@ spec:
       - name: CNB_BUILDER_IMAGE
         type: string
     tasks:
-      - name: check-builder-image
+      - name: buildpacks-extension-check
         params:
         - name: builderImage
           value: $(params.CNB_BUILDER_IMAGE)
@@ -65,16 +65,16 @@ spec:
             - name: revision
               value: main
             - name: pathInRepo
-              value: tekton/task/buildpacks-extension-check/0.1/buildpacks-extension-check.yaml
+              value: tekton/task/buildpacks-extension-check/01/buildpacks-extension-check.yaml
       - name: show-uid
         # Param needed to interpolate the results !!
         params:
         - name: uid
-          value: $(tasks.check-builder-image.results.uid)
+          value: $(tasks.buildpacks-extension-check.results.uid)
         - name: gid
-          value: $(tasks.check-builder-image.results.gid)
+          value: $(tasks.buildpacks-extension-check.results.gid)
         - name: extensionLabels
-          value: $(tasks.check-builder-image.results.extensionLabels)
+          value: $(tasks.buildpacks-extension-check.results.extensionLabels)
         taskSpec:
           steps:
             - name: show-uid-gid
@@ -82,11 +82,11 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 set -e
-  
+
                 echo "Extension labels: $(params.extensionLabels)"
                 echo "CNB user id : $(params.uid)"
                 echo "CNB group id: $(params.gid)"
---- 
+---
 EOF
 ```
 
