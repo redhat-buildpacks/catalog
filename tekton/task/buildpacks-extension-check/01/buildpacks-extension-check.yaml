@@ -13,9 +13,11 @@ metadata:
 
 spec:
   description: >-
-    This Task will scan a Buildpacks builder image to determine if it contains extensions
-    using the labels "io.buildpacks.extension.layers" and "io.buildpacks.buildpack.order-extensions"
-    Next, it will get the CNB USER_ID and CNB GROUP_ID and store them as results
+    This Task will inspect a Buildpacks builder image using the skopeo tool
+    to find if the image includes the labels: io.buildpacks.extension.layers and io.buildpacks.buildpack.order-extensions.
+    If this is the case, then, you can use the "results.extensionLabels" within your PipelineRun or TaskRun to
+    trigger the build using either the buildpacks extension Task or the buildpacks task.
+    Additionally, the CNB USER ID and CNB GROUP ID of the image will be exported as results.
 
   params:
     - name: userHome
@@ -25,15 +27,18 @@ spec:
     - name: verbose
       description: Log the commands that are executed during `git-clone`'s operation.
       type: string
-      default: "true"
-    - name: CNB_BUILDER_IMAGE
-      description: CN Builder image to be scanned
+      default: "false"
+    - name: builderImage
+      description: Builder image to be scanned
       type: string
 
   results:
-    - name: builder_uid
-    - name: builder_gid
-    - name: extension_labels
+    - name: uid
+      description: UID of the user specified in the image
+    - name: gid
+      description: GID of the user specified in the image
+    - name: extensionLabels
+      description: Extensions labels defined in the image
 
   steps:
     - name: check-image-builder-extension
@@ -43,7 +48,8 @@ spec:
           value: $(params.userHome)
         - name: PARAM_VERBOSE
           value: $(params.verbose)
-
+        - name: PARAM_BUILDER_IMAGE
+          value: $(params.builderImage)
       script: |
         #!/usr/bin/env bash
         set -eu
@@ -52,15 +58,14 @@ spec:
           set -x
         fi
 
-        BUILDER_IMAGE=$(params.CNB_BUILDER_IMAGE)
         EXT_LABEL_1="io.buildpacks.extension.layers"
         EXT_LABEL_2="io.buildpacks.buildpack.order-extensions"
 
-        IMG_MANIFEST=$(skopeo inspect --authfile /tekton/creds-secrets/dockercfg/.dockerconfigjson "docker://$BUILDER_IMAGE")
+        IMG_MANIFEST=$(skopeo inspect --authfile ${PARAM_USER_HOME}/creds-secrets/dockercfg/.dockerconfigjson "docker://${PARAM_BUILDER_IMAGE}")
 
         if echo $IMG_MANIFEST | jq -e '.Labels | has("'${EXT_LABEL_1}'") and has("'${EXT_LABEL_2}'")' > /dev/null; then
           echo "The builder image $BUILDER_IMAGE has the labels:"
-          echo "$EXT_LABEL_1:$EXT_LABEL_2" | tee $(results.extension_labels.path)
+          echo -n "$EXT_LABEL_1:$EXT_LABEL_2" | tee $(results.extensionLabels.path)
         else
           echo "The builder image does not have extensions labels defined !"
         fi
@@ -68,10 +73,6 @@ spec:
         CNB_USER_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_USER_ID="))'  | cut -d '=' -f 2)
         CNB_GROUP_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_GROUP_ID="))' | cut -d '=' -f 2)
 
-        #echo "We simulate the case where NO CNB UID/GID have been defined within the builder image: $BUILDER_IMAGE"
-        #echo "" | tee $(results.builder_uid.path)
-        #echo "" | tee $(results.builder_gid.path)
-
-        echo "We simulate the case where the CNB UID/GID have been defined within the builder image: $BUILDER_IMAGE"
-        echo ${CNB_USER_ID}  | tee $(results.builder_uid.path)
-        echo ${CNB_GROUP_ID} | tee $(results.builder_gid.path)
+        echo "CNB_USER_ID and CNB_GROUP_ID defined within the builder image: $BUILDER_IMAGE"
+        echo -n "CNB_USER_ID" | tee $(results.uid.path)
+        echo -n "CNB_GROUP_ID" | tee $(results.gid.path)
