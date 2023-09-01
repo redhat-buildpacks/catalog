@@ -75,7 +75,7 @@ spec:
         CNB_USER_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_USER_ID="))'  | cut -d '=' -f 2)
         CNB_GROUP_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_GROUP_ID="))' | cut -d '=' -f 2)
 
-        echo "## The CNB_USER_ID & CNB_GROUP_ID defined within the builder image: ${PARAM_BUILDER_IMAGE}"
+        echo "## The CNB_USER_ID & CNB_GROUP_ID defined within the builder image: ${PARAM_BUILDER_IMAGE} are:"
         echo -n "$CNB_USER_ID"  | tee "$(results.uid.path)"
         echo ""
         echo -n "$CNB_GROUP_ID" | tee "$(results.gid.path)"

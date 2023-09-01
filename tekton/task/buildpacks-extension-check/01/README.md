@@ -88,6 +88,8 @@ spec:
                 echo "CNB group id: $(params.gid)"
 ---
 EOF
+
+tkn pr logs check-builder-image -f
 ```
 
 ### Registry authentication
