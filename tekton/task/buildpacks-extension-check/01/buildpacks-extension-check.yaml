@@ -67,10 +67,10 @@ spec:
         if echo $IMG_MANIFEST | jq -e '.Labels | has("'${EXT_LABEL_1}'") and has("'${EXT_LABEL_2}'")' > /dev/null; then
           echo "The builder image ${PARAM_BUILDER_IMAGE} has the labels:"
           echo -n "$EXT_LABEL_1:$EXT_LABEL_2" | tee $(results.extensionLabels.path)
-          echo "!==================================================================================!"
+          echo "\n!==================================================================================!"
         else
           echo "The builder image does not have extensions labels defined !"
-          echo "!==================================================================================!"
+          echo "\n!==================================================================================!"
         fi
 
         CNB_USER_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_USER_ID="))'  | cut -d '=' -f 2)
@@ -79,6 +79,6 @@ spec:
         echo "!==================================================================================!"
         echo "CNB_USER_ID and CNB_GROUP_ID defined within the builder image: ${PARAM_BUILDER_IMAGE}"
         echo -n "$CNB_USER_ID"  | tee $(results.uid.path)
-        echo "!==================================================================================!"
+        echo "\n!==================================================================================!"
         echo -n "$CNB_GROUP_ID" | tee $(results.gid.path)
-        echo "!==================================================================================!"
+        echo "\n!==================================================================================!"
