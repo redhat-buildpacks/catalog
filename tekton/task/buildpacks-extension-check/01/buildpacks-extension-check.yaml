@@ -64,7 +64,7 @@ spec:
         IMG_MANIFEST=$(skopeo inspect --authfile ${PARAM_USER_HOME}/creds-secrets/dockercfg/.dockerconfigjson "docker://${PARAM_BUILDER_IMAGE}")
 
         if echo $IMG_MANIFEST | jq -e '.Labels | has("'${EXT_LABEL_1}'") and has("'${EXT_LABEL_2}'")' > /dev/null; then
-          echo "The builder image $BUILDER_IMAGE has the labels:"
+          echo "The builder image ${PARAM_BUILDER_IMAGE} has the labels:"
           echo -n "$EXT_LABEL_1:$EXT_LABEL_2" | tee $(results.extensionLabels.path)
         else
           echo "The builder image does not have extensions labels defined !"
@@ -73,6 +73,6 @@ spec:
         CNB_USER_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_USER_ID="))'  | cut -d '=' -f 2)
         CNB_GROUP_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_GROUP_ID="))' | cut -d '=' -f 2)
 
-        echo "CNB_USER_ID and CNB_GROUP_ID defined within the builder image: $BUILDER_IMAGE"
+        echo "CNB_USER_ID and CNB_GROUP_ID defined within the builder image: ${PARAM_BUILDER_IMAGE}"
         echo -n "CNB_USER_ID" | tee $(results.uid.path)
         echo -n "CNB_GROUP_ID" | tee $(results.gid.path)
