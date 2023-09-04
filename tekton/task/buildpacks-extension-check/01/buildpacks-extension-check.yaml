@@ -73,7 +73,7 @@ spec:
         #    "io.buildpacks.buildpack.order-extensions": "null",
         #
         
-        IMG_LABELS=$(cat $IMG_MANIFEST | jq -e '.Labels')
+        IMG_LABELS=$(echo $IMG_MANIFEST | jq -e '.Labels')
         
         if [[ $(echo "$IMG_LABELS" | jq -r '.["'${EXT_LABEL_1}'"]') != "{}" ]] > /dev/null; then
           echo "## The extension label \"${EXT_LABEL_1}\" of the builder image ${PARAM_BUILDER_IMAGE} is not empty:"
