@@ -78,7 +78,7 @@ spec:
           echo ""
         else
           echo "## The extension label ${EXT_LABEL_1} of the builder image ${PARAM_BUILDER_IMAGE} is empty !"
-          echo ""
+          echo -n "empty" | tee "$(results.extensionLabels.path)"
         fi
 
         CNB_USER_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_USER_ID="))'  | cut -d '=' -f 2)
