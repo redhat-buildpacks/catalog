@@ -435,8 +435,6 @@ spec:
   workspaces:
     - name: workspace
       volumeClaimTemplate:
-        metadata:
-          creationTimestamp: null
         spec:
           accessModes:
             - ReadWriteOnce
@@ -447,4 +445,3 @@ spec:
     - name: git-auth
       secret:
         secretName: '{{ git_auth_secret }}'
-status: {}
