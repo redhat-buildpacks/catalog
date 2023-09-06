@@ -76,11 +76,11 @@ spec:
         IMG_LABELS=$(echo $IMG_MANIFEST | jq -e '.Labels')
         
         if [[ $(echo "$IMG_LABELS" | jq -r '.["'${EXT_LABEL_1}'"]') != "{}" ]] > /dev/null; then
-          echo "## The builder image ${PARAM_BUILDER_IMAGE} include some extension as the extension label \"${EXT_LABEL_1}\" is NOT empty:"
+          echo "## The builder image ${PARAM_BUILDER_IMAGE} includes some extension as the extension label \"${EXT_LABEL_1}\" is NOT empty:"
           echo -n "$IMG_LABELS" | jq -r '.["'${EXT_LABEL_1}'"]' | tee "$(results.extensionLabels.path)"
           echo ""
         else
-          echo "## The builder image ${PARAM_BUILDER_IMAGE} includes extensions as the extension label \"${EXT_LABEL_1}\" is empty !"
+          echo "## The builder image ${PARAM_BUILDER_IMAGE} dot not include extensions as the extension label \"${EXT_LABEL_1}\" is empty !"
           echo -n "empty" | tee "$(results.extensionLabels.path)"
         fi
 
