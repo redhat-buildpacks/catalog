@@ -13,11 +13,10 @@ endif::[]
 
 == Introduction
 
-This GitHub template project contains the code source needed to build a Quarkus runtime exposing these endpoints: `/hello` and `+/hello/greeting/{name}+`
-using different pipelines:
+This GitHub project is a catalog of different artifacts: Pipeline, PipelineRun, Task, BuilderStrategy, etc to be used to build a runtime using https://buildpack.io/[Buildpack] in combination with https://tekton.dev/[Tekton], https://shipwright.io/[Shipwright] or https://developers.redhat.com/products/trusted-software-supply-chain/overview[RHTAP]:
 
-- RHTAP Buildpack pipeline using https://pipelinesascode.com/[PipelineAsCode]: tekton/pipelinerun/rhtap/pipelinerun-buildpacks.yaml
-- Tekton Buildpack https://tekton.dev/[pipeline]: TODO
-- https://shipwright.io/[Shipwright] Buildpack (Cluster)BuildStrategy: TODO
+- RHTAP Buildpack PipelineRun
+- Tekton Buildpack: Pipeline and Tasks
+- Shipwright Buildpack: BuildStrategy (TODO)
 
-IMPORTANT: Instructions to play with the PipelineRun on RHTAP are available within this https://github.com/redhat-buildpacks/testing/tree/main#4-rhtap[project].
+IMPORTANT: Instructions to play with such a technology is available https://github.com/redhat-buildpacks/testing[here].
