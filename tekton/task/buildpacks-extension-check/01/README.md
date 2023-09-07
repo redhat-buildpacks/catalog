@@ -14,7 +14,7 @@ Additionally, the CNB USER ID and CNB GROUP ID of the image will be exported as 
 ## Install the task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/redhat-buildpacks/templates/main/tekton/task/buildpacks-extension-check/01/buildpacks-extension-check.yaml
+kubectl apply -f https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-extension-check/01/buildpacks-extension-check.yaml
 ```
 
 ## Parameters
