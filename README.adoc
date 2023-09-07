@@ -16,7 +16,7 @@ endif::[]
 This GitHub template project contains the code source needed to build a Quarkus runtime exposing these endpoints: `/hello` and `+/hello/greeting/{name}+`
 using different pipelines:
 
-- RHTAP Buildpack pipeline using https://pipelinesascode.com/[PipelineAsCode]: tekton/pipelinerun-rhtap-buildpack.yaml
+- RHTAP Buildpack pipeline using https://pipelinesascode.com/[PipelineAsCode]: tekton/pipelinerun/rhtap/pipelinerun-buildpacks.yaml
 - Tekton Buildpack https://tekton.dev/[pipeline]: TODO
 - https://shipwright.io/[Shipwright] Buildpack (Cluster)BuildStrategy: TODO
 
