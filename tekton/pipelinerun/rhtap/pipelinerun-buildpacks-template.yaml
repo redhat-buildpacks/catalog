@@ -58,7 +58,7 @@ spec:
             - name: pathInRepo
               value: task/grype/0.1/grype.yaml
         workspaces:
-          - emptyDir: {}
+          - workspace: workspace
             name: source-dir
 
       - name: show-summary
