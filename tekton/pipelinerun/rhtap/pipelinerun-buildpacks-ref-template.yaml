@@ -15,7 +15,7 @@ metadata:
     appstudio.openshift.io/application: rhtap-buildpack-demo-1  # >> changeme
     appstudio.openshift.io/component: quarkus-hello # >> changeme
     pipelines.appstudio.openshift.io/type: build
-    rhtap.snowdrop.dev/build: "test-1" # >> changeme
+    rhtap.snowdrop.dev/build: "test-0" # >> changeme
   name: quarkus-hello # >> changeme
   namespace: cmoullia-tenant # >> changeme
 spec:
