@@ -1,0 +1,360 @@
+apiVersion: tekton.dev/v1beta1 # or tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-rhtap
+spec:
+  workspaces:
+    - name: workspace
+    - name: git-auth
+      optional: true
+  params:
+    - description: Source Repository URL
+      name: git-url
+      type: string
+    - default: ""
+      description: Revision of the Source Repository
+      name: revision
+      type: string
+    - description: Fully Qualified Output Image
+      name: output-image
+      type: string
+    - default: .
+      description: The path to your source code
+      name: path-context
+      type: string
+    - default: Dockerfile
+      description: Path to the Dockerfile
+      name: dockerfile
+      type: string
+    - default: "false"
+      description: Force rebuild image
+      name: rebuild
+      type: string
+    - description: A boolean indicating whether we would like to execute a step
+      default: "true"
+      name: enable-sbom
+      type: string
+    - default: table
+      description: Format to be used to export/show the SBOM. Format available for grype are 'json table cyclonedx cyclonedx-json sarif template'
+      name: grype-sbom-format
+      type: string
+    - default: "false"
+      description: Skip checks against built image
+      name: skip-checks
+      type: string
+    - default: "true"
+      description: Skip optional checks, set false if you want to run optional checks
+      name: skip-optional
+      type: string
+    - default: "false"
+      description: Execute the build with network isolation
+      name: hermetic
+      type: string
+    - default: ""
+      description: Build dependencies to be prefetched by Cachi2
+      name: prefetch-input
+      type: string
+    - default: "false"
+      description: Java build
+      name: java
+      type: string
+    - default: ""
+      description: Snyk Token Secret Name
+      name: snyk-secret
+      type: string
+    - default: ""
+      description: Image tag expiration time, time values could be something like
+        1h, 2d, 3w for hours, days, and weeks, respectively.
+      name: image-expires-after
+  results:
+    - description: "The URL of the built `APPLICATION_IMAGE`"
+      name: IMAGE_URL
+      value: $(tasks.build-container.results.IMAGE_URL)
+    - description: "The digest of the built `APPLICATION_IMAGE`"
+      name: IMAGE_DIGEST
+      value: $(tasks.build-container.results.IMAGE_DIGEST)
+    - description: ""
+      name: CHAINS-GIT_URL
+      value: $(tasks.clone-repository.results.url)
+    - description: ""
+      name: CHAINS-GIT_COMMIT
+      value: $(tasks.clone-repository.results.commit)
+  finally:
+    - name: show-sbom
+      # Goal: Export from the buildpack image the SBOM files using Grype tool
+      # Definition: https://github.com/tektoncd/catalog/tree/main/task/grype/0.1
+      when:
+        - input: $(params.enable-sbom)
+          operator: in
+          values: ["true"]
+      params:
+        - name: GRYPE_IMAGE
+          value: anchore/grype:v0.65.1
+        - name: ARGS
+          value:
+            - $(tasks.build-container.results.IMAGE_URL)
+            - -o $(params.grype-sbom-format)
+      taskRef:
+        resolver: git
+        params:
+          - name: url
+            value: https://github.com/tektoncd/catalog.git
+          - name: revision
+            value: main
+          - name: pathInRepo
+            value: task/grype/0.1/grype.yaml
+      workspaces:
+        - workspace: workspace
+          name: source-dir
+
+    - name: show-summary
+      when:
+        - input: $(params.enable-sbom)
+          operator: in
+          values: ["true"]
+      params:
+        - name: pipelinerun-name
+          value: $(context.pipelineRun.name)
+        - name: git-url
+          value: $(tasks.clone-repository.results.url)?rev=$(tasks.clone-repository.results.commit)
+        - name: image-url
+          value: $(params.output-image)
+        - name: build-task-status
+          value: $(tasks.build-container.status)
+      taskRef:
+        resolver: bundles
+        params:
+          - name: bundle
+            value: quay.io/redhat-appstudio-tekton-catalog/task-summary:0.1@sha256:bd6a2285974541df01260deca99a84b3b48a6b40759049e7e41e96b4942d83d3
+          - name: name
+            value: summary
+          - name: kind
+            value: Task
+  tasks:
+    - name: init
+      # Goal: Initialize Pipeline Task, include flags for rebuild and auth. Generates image repository secret used by the PipelineRun.
+      # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/init/0.1
+      params:
+        - name: image-url
+          value: $(params.output-image)
+        - name: rebuild
+          value: $(params.rebuild)
+        - name: skip-checks
+          value: $(params.skip-checks)
+        - name: skip-optional
+          value: $(params.skip-optional)
+        - name: pipelinerun-name
+          value: $(context.pipelineRun.name)
+        - name: pipelinerun-uid
+          value: $(context.pipelineRun.uid)
+      taskRef:
+        resolver: bundles
+        params:
+          - name: bundle
+            value: quay.io/redhat-appstudio-tekton-catalog/task-init:0.1@sha256:26586a7ef08c3e86dfdaf0a5cc38dd3d70c4c02db1331b469caaed0a0f5b3d86
+          - name: name
+            value: init
+    - name: clone-repository
+      # Goal: clone a repo from the provided url into the output Workspace. By default the repo will be cloned into the root of your Workspace.
+      # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/git-clone/0.1
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.revision)
+      runAfter:
+        - init
+      taskRef:
+        resolver: bundles
+        params:
+          - name: bundle
+            value: quay.io/redhat-appstudio-tekton-catalog/task-git-clone:0.1@sha256:44260edd7da429a3bca3843be5049a15f05f658d1e9766521379e067e972c1e0
+          - name: name
+            value: git-clone
+      when:
+        - input: $(tasks.init.results.build)
+          operator: in
+          values:
+            - "true"
+      workspaces:
+        - name: output
+          workspace: workspace
+        - name: basic-auth
+          workspace: git-auth
+
+    - name: build-container
+      # Goal: Perform a buildpack build using the an updated version of the Task Buildpack phases
+      # Definition:https://github.com/redhat-buildpacks/testing/blob/02482ceac7e44583ac84d26565f3c0480f5192b9/k8s/tekton/buildpacks-phases.yml
+      params:
+        - name: IMAGE
+          value: $(params.output-image)
+        - name: DOCKERFILE
+          value: $(params.dockerfile)
+        - name: CONTEXT
+          value: $(params.path-context)
+        - name: HERMETIC
+          value: $(params.hermetic)
+        - name: PREFETCH_INPUT
+          value: $(params.prefetch-input)
+        - name: IMAGE_EXPIRES_AFTER
+          value: $(params.image-expires-after)
+        - name: COMMIT_SHA
+          value: $(tasks.clone-repository.results.commit)
+        # Buildpacks parameters
+        - name: APP_IMAGE
+          value: $(params.output-image)  #${IMAGE_NAME}
+        - name: SOURCE_SUBPATH
+          value: "" #getting-started
+        - name: CNB_BUILDER_IMAGE
+          value: paketobuildpacks/builder-jammy-tiny:0.0.176 #${BUILDER_IMAGE}
+        - name: CNB_LIFECYCLE_IMAGE
+          value: buildpacksio/lifecycle:0.17.0 #${LIFECYCLE_IMAGE}
+        - name: CNB_RUN_IMAGE
+          value: paketobuildpacks/run-jammy-tiny:latest #${CNB_RUN_IMAGE}
+        - name: CNB_BUILD_IMAGE
+          value: paketobuildpacks/build-jammy-tiny:latest #${CNB_BUILD_IMAGE}
+        - name: ENV_VARS
+          value:
+            - BP_NATIVE_IMAGE=false
+            - BP_MAVEN_BUILT_ARTIFACT=target/quarkus-app/lib/ target/quarkus-app/*.jar target/quarkus-app/app/ target/quarkus-app/quarkus/
+            - BP_MAVEN_BUILD_ARGUMENTS=package -DskipTests=true -Dmaven.javadoc.skip=true -Dquarkus.package.type=fast-jar
+      runAfter:
+        - clone-repository
+      taskRef:
+        resolver: git
+        params:
+          - name: url
+            value: https://github.com/redhat-buildpacks/testing.git
+          - name: revision
+            value: main
+          - name: pathInRepo
+            value: k8s/tekton/buildpacks-phases.yml
+      when:
+        - input: $(tasks.init.results.build)
+          operator: in
+          values:
+            - "true"
+      workspaces:
+        - name: source
+          workspace: workspace
+
+    - name: inspect-image
+      # Goal: uses Skopeo to inspect and analyze manifest data from the target source image of a container if it is built from scratch
+      # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/inspect-image/0.1
+      params:
+        - name: IMAGE_URL
+          value: $(tasks.build-container.results.IMAGE_URL)
+        - name: IMAGE_DIGEST
+          value: $(tasks.build-container.results.IMAGE_DIGEST)
+      runAfter:
+        - build-container
+      taskRef:
+        resolver: bundles
+        params:
+          - name: bundle
+            value: quay.io/redhat-appstudio-tekton-catalog/task-inspect-image:0.1@sha256:bbc286f0a2ad94e671ceb9d0f1debd96f36b8c38c1147c5030957820b4125fc6
+          - name: name
+            value: inspect-image
+      when:
+        - input: $(params.skip-checks)
+          operator: in
+          values:
+            - "true"
+      workspaces:
+        - name: source
+          workspace: workspace
+
+    - name: clair-scan
+      # Goal: performs vulnerability scanning using Clair, an open source tool for performing static analysis on container images.
+      # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/clair-scan/0.1
+      params:
+        - name: image-digest
+          value: $(tasks.build-container.results.IMAGE_DIGEST)
+        - name: image-url
+          value: $(tasks.build-container.results.IMAGE_URL)
+      runAfter:
+        - build-container
+      taskRef:
+        resolver: bundles
+        params:
+          - name: bundle
+            value: quay.io/redhat-appstudio-tekton-catalog/task-clair-scan:0.1@sha256:c5602d9d6dd797da98e98fde8471ea55a788c30f74f2192807910ce5436e9b66
+          - name: name
+            value: clair-scan
+      when:
+        - input: $(params.skip-checks)
+          operator: in
+          values:
+            - "true"
+    - name: sast-snyk-check
+      # Goal: Uses Snyk Code tool to perform Static Application Security Testing (SAST) for Snyk, a popular cloud-native application security platform
+      # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/sast-snyk-check/0.1
+      params:
+        - name: SNYK_SECRET
+          value: $(params.snyk-secret)
+      runAfter:
+        - clone-repository
+      taskRef:
+        resolver: bundles
+        params:
+          - name: bundle
+            value: quay.io/redhat-appstudio-tekton-catalog/task-sast-snyk-check:0.1@sha256:9dcd450b454705b9fe22c5f8f7bb7305cebc3cb73e783b85e047f7e721994189
+          - name: name
+            value: sast-snyk-check
+      when:
+        - input: $(params.skip-checks)
+          operator: in
+          values:
+            - "true"
+        - input: $(params.snyk-secret)
+          operator: notin
+          values:
+            - ""
+      workspaces:
+        - name: workspace
+          workspace: workspace
+    - name: clamav-scan
+      # Goal: Scans files for viruses and other malware using the ClamAV antivirus scanner
+      # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/clamav-scan/0.1
+      params:
+        - name: image-digest
+          value: $(tasks.build-container.results.IMAGE_DIGEST)
+        - name: image-url
+          value: $(tasks.build-container.results.IMAGE_URL)
+      runAfter:
+        - build-container
+      taskRef:
+        resolver: bundles
+        params:
+          - name: bundle
+            value: quay.io/redhat-appstudio-tekton-catalog/task-clamav-scan:0.1@sha256:d00c0bf26c63ee86631a289d46abb75acfe3db2743a06a8d656fdde1451702e9
+          - name: name
+            value: clamav-scan
+      when:
+        - input: $(params.skip-checks)
+          operator: in
+          values:
+            - "true"
+    - name: sbom-json-check
+      # Goal: The sbom-json-check task verifies the integrity and security of a Software Bill of Materials (SBOM) file in JSON format using the CyloneDX tool.
+      # Definition: https://github.com/redhat-appstudio/build-definitions/tree/main/task/sbom-json-check/0.1
+      # TODO: This step will fail as root path containing the SBOM files is not the same between buildpack and buildah build
+      params:
+        - name: IMAGE_URL
+          value: $(tasks.build-container.results.IMAGE_URL)
+        - name: IMAGE_DIGEST
+          value: $(tasks.build-container.results.IMAGE_DIGEST)
+      runAfter:
+        - build-container
+      taskRef:
+        resolver: bundles
+        params:
+          - name: bundle
+            value: quay.io/redhat-appstudio-tekton-catalog/task-sbom-json-check:0.1@sha256:397cb2fb20f413dec9653134231bec86edb80806a3441081fbf473677fc40917
+          - name: name
+            value: sbom-json-check
+      when:
+        - input: $(params.skip-checks)
+          operator: in
+          values:
+            - "true"

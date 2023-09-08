@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  annotations:
+    build.appstudio.openshift.io/repo: 'https://github.com/halkyonio/rhtap-buildpack-demo-1?rev={{revision}}' # >> changeme
+    build.appstudio.redhat.com/commit_sha: '{{revision}}'
+    build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
+    build.appstudio.redhat.com/target_branch: '{{target_branch}}'
+    appstudio.openshift.io/request: "configure-pac"
+    pipelinesascode.tekton.dev/max-keep-runs: "3"
+    pipelinesascode.tekton.dev/on-event: '[push]' # >> changeme
+    pipelinesascode.tekton.dev/on-target-branch: '[main]'
+    pipelinesascode.tekton.dev/pipeline: "https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/pipeline/rhtap/01/pipeline-buildpacks.yaml"
+  labels:
+    appstudio.openshift.io/application: rhtap-buildpack-demo-1  # >> changeme
+    appstudio.openshift.io/component: quarkus-hello # >> changeme
+    pipelines.appstudio.openshift.io/type: build
+    rhtap.snowdrop.dev/build: "test-1" # >> changeme
+  name: quarkus-hello # >> changeme
+  namespace: cmoullia-tenant # >> changeme
+spec:
+  params:
+    - name: dockerfile
+      value: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/src/main/docker/Dockerfile.jvm.staged
+    - name: git-url
+      value: '{{repo_url}}'
+    - name: image-expires-after
+      value: 5d
+    - name: output-image
+      # Example: quay.io/redhat-user-workloads/cmoullia-tenant/rhtap-buildpack-demo-1/quarkus-hello-1:8e532f04f5cd873acc57cf5d0514111af93a8b91
+      value: quay.io/redhat-user-workloads/cmoullia-tenant/rhtap-buildpack-demo-1/quarkus-hello:build-{{revision}} # >> changeme
+    - name: path-context
+      value: .
+    - name: revision
+      value: '{{revision}}'
+  pipelineRef:
+    name: pipeline-rhtap
+  workspaces:
+    - name: workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+        status: {}
+    - name: git-auth
+      secret:
+        secretName: '{{ git_auth_secret }}'
