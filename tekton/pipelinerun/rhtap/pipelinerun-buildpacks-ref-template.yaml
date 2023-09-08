@@ -33,6 +33,22 @@ spec:
       value: .
     - name: revision
       value: '{{revision}}'
+    # Buildpacks parameters
+    - name: APP_IMAGE
+      value: $(params.output-image)
+    - name: CNB_BUILDER_IMAGE
+      value: paketobuildpacks/builder-jammy-tiny:0.0.176 #${BUILDER_IMAGE}
+    - name: CNB_LIFECYCLE_IMAGE
+      value: buildpacksio/lifecycle:0.17.0 #${LIFECYCLE_IMAGE}
+    - name: CNB_RUN_IMAGE
+      value: paketobuildpacks/run-jammy-tiny:latest #${CNB_RUN_IMAGE}
+    - name: CNB_BUILD_IMAGE
+      value: paketobuildpacks/build-jammy-tiny:latest #${CNB_BUILD_IMAGE}
+    - name: ENV_VARS
+      value:
+        - BP_NATIVE_IMAGE=false
+        - BP_MAVEN_BUILT_ARTIFACT=target/quarkus-app/lib/ target/quarkus-app/*.jar target/quarkus-app/app/ target/quarkus-app/quarkus/
+        - BP_MAVEN_BUILD_ARGUMENTS=package -DskipTests=true -Dmaven.javadoc.skip=true -Dquarkus.package.type=fast-jar
   pipelineRef:
     name: pipeline-rhtap
   workspaces:

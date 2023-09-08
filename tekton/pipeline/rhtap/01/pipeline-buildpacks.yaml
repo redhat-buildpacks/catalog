@@ -66,6 +66,10 @@ spec:
       description: Image tag expiration time, time values could be something like
         1h, 2d, 3w for hours, days, and weeks, respectively.
       name: image-expires-after
+    - default: "."
+      description: Subpath of the git cloned project where code should be used
+      name: sourceSubPath
+      type: string
   results:
     - description: "The URL of the built `APPLICATION_IMAGE`"
       name: IMAGE_URL
@@ -204,7 +208,7 @@ spec:
         - name: APP_IMAGE
           value: $(params.output-image)  #${IMAGE_NAME}
         - name: SOURCE_SUBPATH
-          value: "" #getting-started
+          value: $(params.sourceSubPath)
         - name: CNB_BUILDER_IMAGE
           value: paketobuildpacks/builder-jammy-tiny:0.0.176 #${BUILDER_IMAGE}
         - name: CNB_LIFECYCLE_IMAGE
