@@ -254,11 +254,11 @@ spec:
           resolver: git
           params:
             - name: url
-              value: https://github.com/redhat-buildpacks/testing.git
+              value: https://github.com/redhat-buildpacks/catalog.git
             - name: revision
               value: main
             - name: pathInRepo
-              value: k8s/tekton/buildpacks-phases.yml
+              value: tekton/task/buildpacks-phases/01/buildpacks-phases.yaml
         when:
           - input: $(tasks.init.results.build)
             operator: in
