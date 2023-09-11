@@ -32,6 +32,19 @@ spec:
       value: .
     - name: revision
       value: '{{revision}}'
+    # Buildpacks parameters
+    - name: sourceSubPath
+      value: "#SOURCE_SUB_PATH#" # >> changeme
+    - name: cnbLogLevel
+      value: "#CNB_LOG_LEVEL#" # >> changeme
+    - name: cnbBuilderImage
+      value: "#CNB_BUILDER_IMAGE#" # >> changeme
+    - name: cnbBuildImage
+      value: "#CNB_BUILD_IMAGE#" # >> changeme
+    - name: cnbRunImage
+      value: "#CNB_RUN_IMAGE#" # >> changeme
+    - name: cnbEnvVars
+      value: "["#CNB_ENV_VARS#"]" # >> changeme
   pipelineSpec:
     finally:
       - name: show-sbom
@@ -231,18 +244,22 @@ spec:
           - name: COMMIT_SHA
             value: $(tasks.clone-repository.results.commit)
           # Buildpacks parameters
-          - name: sourceSubPath
-            value: "#SOURCE_SUB_PATH#" # >> changeme
-          - name: cnbLogLevel
-            value: "#CNB_LOG_LEVEL#" # >> changeme
-          - name: cnbBuilderImage
-            value: "#CNB_BUILDER_IMAGE#" # >> changeme
-          - name: cnbBuildImage
-            value: "#CNB_BUILD_IMAGE#" # >> changeme
-          - name: cnbRunImage
-            value: "#CNB_RUN_IMAGE#" # >> changeme
-          - name: ENV_VARS
-            value: "["#CNB_ENV_VARS#"]" # >> changeme
+          - name: SOURCE_SUBPATH
+            value: $(params.sourceSubPath)
+          - name: CNB_LOG_LEVEL
+            value: $(params.cnbLogLevel)
+          - name: CNB_BUILDER_IMAGE
+            value: $(params.cnbBuilderImage)
+          - name: CNB_LIFECYCLE_IMAGE
+            value: $(params.cnbLifecycleImage)
+          - name: CNB_EXPERIMENTAL_MODE
+            value: $(params.cnbExperimentalMode)
+          - name: CNB_BUILD_IMAGE
+            value: $(params.cnbBuildImage)
+          - name: CNB_RUN_IMAGE
+            value: $(params.cnbRunImage)
+          - name: CNB_ENV_VARS
+            value: "[$(params.cnbEnvVars)]"
         runAfter:
           - clone-repository
         taskRef:
