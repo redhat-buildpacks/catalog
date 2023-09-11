@@ -34,17 +34,17 @@ spec:
       value: '{{revision}}'
     # Buildpacks parameters
     - name: sourceSubPath
-      value: "." # >> changeme
+      value: "#SOURCE_SUB_PATH#" # >> changeme
     - name: cnbLogLevel
-      value: "debug" # >> changeme
+      value: "#CNB_LOG_LEVEL#" # >> changeme
     - name: cnbBuilderImage
-      value: "paketobuildpacks/builder-jammy-tiny:0.0.176" # >> changeme
+      value: "#CNB_BUILDER_IMAGE#" # >> changeme
     - name: cnbBuildImage
-      value: "paketobuildpacks/build-jammy-tiny:latest" # >> changeme
+      value: "#CNB_BUILD_IMAGE#" # >> changeme
     - name: cnbRunImage
-      value: "paketobuildpacks/run-jammy-tiny:latest" # >> changeme
+      value: "#CNB_RUN_IMAGE#" # >> changeme
     - name: ENV_VARS
-      value: "#ENV_VARS" # >> changeme
+      value: "#CNB_ENV_VARS" # >> changeme
   pipelineRef:
     name: pipeline-rhtap
   workspaces:
