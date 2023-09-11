@@ -13,6 +13,7 @@ metadata:
   labels:
     appstudio.openshift.io/application: #APPLICATION_NAME#  # >> changeme
     appstudio.openshift.io/component: #COMPONENT_NAME# # >> changeme
+    pipelinesascode.tekton.dev/pipeline: #REMOTE_PIPELINE# # >> changeme
     pipelines.appstudio.openshift.io/type: build
     rhtap.snowdrop.dev/build: "test-#BUILD_ID#" # >> changeme
   name: #PAC_NAME# # >> changeme
