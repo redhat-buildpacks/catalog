@@ -104,7 +104,7 @@ spec:
            value: $(tasks.buildpacks-extension-check.results.uid)
          - name: CNB_GROUP_ID
            value: $(tasks.buildpacks-extension-check.results.gid)
-         - name: ENV_VARS
+         - name: CNB_ENV_VARS
            value: ["$(params.cnbBuildEnvVars)"]
 
     - name: buildpacks-extension
@@ -140,5 +140,5 @@ spec:
            value: $(tasks.buildpacks-extension-check.results.uid)
          - name: CNB_GROUP_ID
            value: $(tasks.buildpacks-extension-check.results.gid)
-         - name: ENV_VARS
+         - name: CNB_ENV_VARS
            value: ["$(params.cnbBuildEnvVars)"]
