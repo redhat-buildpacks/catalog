@@ -44,7 +44,7 @@ spec:
     - name: cnbRunImage
       value: "#CNB_RUN_IMAGE#" # >> changeme
     - name: cnbEnvVars
-      value: "["#CNB_ENV_VARS#"]" # >> changeme
+      value: "[#CNB_ENV_VARS#]" # >> changeme
   pipelineSpec:
     finally:
       - name: show-sbom
