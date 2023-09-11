@@ -150,6 +150,43 @@ spec:
         description: Image tag expiration time, time values could be something like
           1h, 2d, 3w for hours, days, and weeks, respectively.
         name: image-expires-after
+      # Buildpacks parameters
+      - default: "."
+        description: Subpath of the git cloned project where code should be used
+        name: sourceSubPath
+        type: string
+      - default: ""
+        description: Buildpacks Builder image to be used to build the runtime
+        name: cnbBuilderImage
+        type: string
+      - default: ""
+        description: TODO
+        name: cnbLifecycleImage
+        type: string
+      - default: ""
+        name: cnbBuildImage
+        description: TODO
+        type: string
+      - default: ""
+        description: TODO
+        name: cnbRunImage
+        type: string
+      - default: [""]
+        description: Environment variables to set during _build-time_.
+        name: cnbBuildEnvVars
+        type: array
+      - default: "info"
+        description: TODO
+        name: cnbLogLevel
+        type: string
+      - default: "true"
+        description: TODO
+        name: cnbExperimentalMode
+        type: string
+      - default: ""
+        description: TODO
+        name: AppImage
+        type: string
     results:
       - description: "The URL of the built `APPLICATION_IMAGE`"
         name: IMAGE_URL
