@@ -44,7 +44,7 @@ spec:
       value: "#CNB_BUILD_IMAGE#" # >> changeme
     - name: cnbRunImage
       value: "#CNB_RUN_IMAGE#" # >> changeme
-    - name: ENV_VARS
+    - name: cnbBuildEnvVars
       value: "[#CNB_ENV_VARS#]" # >> changeme
   pipelineRef:
     name: pipeline-rhtap

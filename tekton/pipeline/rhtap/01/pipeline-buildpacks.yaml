@@ -250,7 +250,7 @@ spec:
           value: $(params.cnbRunImage) #${CNB_RUN_IMAGE}
         - name: CNB_BUILD_IMAGE
           value: $(params.cnbBuildImage) #${CNB_BUILD_IMAGE}
-        - name: ENV_VARS
+        - name: CNB_ENV_VARS
           value: ["$(params.cnbBuildEnvVars)"]
       runAfter:
         - clone-repository

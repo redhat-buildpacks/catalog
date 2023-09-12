@@ -29,9 +29,10 @@ spec:
       description: The image on which builds will run (must include lifecycle and compatible buildpacks).
     - name: CNB_BUILD_IMAGE
       description: Reference to the current build image in an OCI registry (if used <kaniko-dir> must be provided)
+    - name: CNB_RUN_IMAGE
+      description: Reference to a run image to use.
     - name: CNB_LIFECYCLE_IMAGE
       description: The image to use when executing sensitive phases.
-      default: docker.io/buildpacksio/lifecycle:0.10.2@sha256:1bf8d3fc41d2fdf0ee4abdad50038ab8902ef58c74f5bcfc432c26767d889ed0
     - name: CNB_EXPERIMENTAL_MODE
       description: Environment variable to control ALL experimental features by the platform.
       default: "warn"
@@ -44,11 +45,12 @@ spec:
     - name: CNB_GROUP_ID
       description: The group ID of the builder image user.
       default: "1000"
+    - name: CNB_ENV_VARS
+      type: array
+      description: Environment variables to set during _build-time_.
+      default: []
     - name: APP_IMAGE
       description: The name of where to store the app image.
-    - name: CNB_RUN_IMAGE
-      description: Reference to a run image to use.
-      default: "paketobuildpacks/run-jammy-tiny:latest"
     - name: CACHE_IMAGE
       description: The name of the persistent app cache image (if no cache workspace is provided).
       default: ""
@@ -58,10 +60,6 @@ spec:
     - name: SOURCE_SUBPATH
       description: A subpath within the `source` input where the source to build is located.
       default: ""
-    - name: ENV_VARS
-      type: array
-      description: Environment variables to set during _build-time_.
-      default: []
     - name: PLATFORM_DIR
       description: The name of the platform directory.
       default: empty-dir
@@ -91,7 +89,7 @@ spec:
       image: quay.io/swsmirror/bash
       args:
         - "--env-vars"
-        - "$(params.ENV_VARS[*])"
+        - "$(params.CNB_ENV_VARS[*])"
       script: |
         #!/usr/bin/env bash
         set -eu
