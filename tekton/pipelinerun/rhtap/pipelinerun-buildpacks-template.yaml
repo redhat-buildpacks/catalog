@@ -43,8 +43,8 @@ spec:
       value: "#CNB_BUILD_IMAGE#" # >> changeme
     - name: cnbRunImage
       value: "#CNB_RUN_IMAGE#" # >> changeme
-    - name: cnbBuildEnvVars
-      value: [#CNB_ENV_VARS#] # >> changeme
+    - name: cnbBuildEnvVars # Use the CNB_ENV_VARS to pass using jq the array of the values
+      value: []
   pipelineSpec:
     finally:
       - name: show-sbom
