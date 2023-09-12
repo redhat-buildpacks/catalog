@@ -171,10 +171,10 @@ spec:
         description: TODO
         name: cnbRunImage
         type: string
-      - default: ""
+      - default: [""]
         description: Environment variables to set during _build-time_.
         name: cnbBuildEnvVars
-        type: string
+        type: array
       - default: "info"
         description: TODO
         name: cnbLogLevel
