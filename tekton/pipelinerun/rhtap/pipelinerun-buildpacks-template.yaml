@@ -43,7 +43,7 @@ spec:
       value: "#CNB_BUILD_IMAGE#" # >> changeme
     - name: cnbRunImage
       value: "#CNB_RUN_IMAGE#" # >> changeme
-    - name: cnbEnvVars
+    - name: cnbBuildEnvVars
       value: "[#CNB_ENV_VARS#]" # >> changeme
   pipelineSpec:
     finally:
@@ -298,7 +298,7 @@ spec:
           - name: CNB_RUN_IMAGE
             value: $(params.cnbRunImage)
           - name: CNB_ENV_VARS
-            value: "[$(params.cnbEnvVars)]"
+            value: "[$(params.cnbBuildEnvVars)]"
         runAfter:
           - clone-repository
         taskRef:
