@@ -296,7 +296,7 @@ spec:
           - name: CNB_RUN_IMAGE
             value: $(params.cnbRunImage)
           - name: CNB_ENV_VARS
-            value: "[$(params.cnbBuildEnvVars)]"
+            value: ["$(params.cnbBuildEnvVars)"]
         runAfter:
           - clone-repository
         taskRef:
