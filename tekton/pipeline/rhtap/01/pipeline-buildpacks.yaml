@@ -219,9 +219,31 @@ spec:
         - name: basic-auth
           workspace: git-auth
 
+    - name: buildpacks-extension-check
+      params:
+        - name: builderImage
+          value: $(params.cnbBuilderImage)
+      taskRef:
+        resolver: git
+        params:
+          - name: url
+            value: https://github.com/redhat-buildpacks/catalog.git
+          - name: revision
+            value: main
+          - name: pathInRepo
+            value: tekton/task/buildpacks-extension-check/01/buildpacks-extension-check.yaml
+
     - name: build-container
-      # Goal: Perform a buildpack build using the an updated version of the Task Buildpack phases
+      # Goal: Perform a buildpack build using an updated version of the Task Buildpack phases
       # Definition:https://github.com/redhat-buildpacks/testing/blob/02482ceac7e44583ac84d26565f3c0480f5192b9/k8s/tekton/buildpacks-phases.yml
+      when:
+        - input: $(tasks.init.results.build)
+          operator: in
+          values:
+            - "true"
+        - input: $(tasks.buildpacks-extension-check.results.extensionLabels)
+          operator: in
+          values: [ "empty" ]
       params:
         - name: IMAGE
           value: $(params.output-image)
@@ -246,10 +268,18 @@ spec:
           value: $(params.cnbBuilderImage) #${BUILDER_IMAGE}
         - name: CNB_LIFECYCLE_IMAGE
           value: $(params.cnbLifecycleImage) #${LIFECYCLE_IMAGE}
+        - name: CNB_EXPERIMENTAL_MODE
+          value: $(params.cnbExperimentalMode)
+        - name: CNB_LOG_LEVEL
+          value: $(params.cnbLogLevel)
         - name: CNB_RUN_IMAGE
           value: $(params.cnbRunImage) #${CNB_RUN_IMAGE}
         - name: CNB_BUILD_IMAGE
           value: $(params.cnbBuildImage) #${CNB_BUILD_IMAGE}
+        - name: CNB_USER_ID
+          value: $(tasks.buildpacks-extension-check.results.uid)
+        - name: CNB_GROUP_ID
+          value: $(tasks.buildpacks-extension-check.results.gid)
         - name: CNB_ENV_VARS
           value: ["$(params.cnbBuildEnvVars)"]
       runAfter:
@@ -263,11 +293,30 @@ spec:
             value: main
           - name: pathInRepo
             value: tekton/task/buildpacks-phases/01/buildpacks-phases.yaml
+      workspaces:
+        - name: source
+          workspace: workspace
+
+    - name: buildpacks-extension
       when:
         - input: $(tasks.init.results.build)
           operator: in
           values:
             - "true"
+        - input: $(tasks.buildpacks-extension-check.results.extensionLabels)
+          operator: notin
+          values: ["empty"]
+      runAfter:
+        - clone-repository
+      taskRef:
+        resolver: git
+        params:
+          - name: url
+            value: https://github.com/redhat-buildpacks/catalog.git
+          - name: revision
+            value: main
+          - name: pathInRepo
+            value: tekton/task/buildpacks-extension-phases/01/buildpacks-extension-phases.yaml
       workspaces:
         - name: source
           workspace: workspace
