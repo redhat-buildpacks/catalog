@@ -220,6 +220,8 @@ spec:
           workspace: git-auth
 
     - name: buildpacks-extension-check
+      runAfter:
+       - clone-repository
       params:
         - name: builderImage
           value: $(params.cnbBuilderImage)
