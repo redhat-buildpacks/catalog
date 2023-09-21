@@ -238,6 +238,8 @@ spec:
     - name: build-container
       # Goal: Perform a buildpack build using an updated version of the Task Buildpack phases
       # Definition:https://github.com/redhat-buildpacks/testing/blob/02482ceac7e44583ac84d26565f3c0480f5192b9/k8s/tekton/buildpacks-phases.yml
+      runAfter:
+        - clone-repository
       when:
         - input: $(tasks.init.results.build)
           operator: in
@@ -284,8 +286,6 @@ spec:
           value: $(tasks.buildpacks-extension-check.results.gid)
         - name: CNB_ENV_VARS
           value: ["$(params.cnbBuildEnvVars)"]
-      runAfter:
-        - clone-repository
       taskRef:
         resolver: git
         params:
@@ -300,6 +300,8 @@ spec:
           workspace: workspace
 
     - name: buildpacks-extension
+      runAfter:
+        - clone-repository
       when:
         - input: $(tasks.init.results.build)
           operator: in
@@ -308,8 +310,44 @@ spec:
         - input: $(tasks.buildpacks-extension-check.results.extensionLabels)
           operator: notin
           values: ["empty"]
-      runAfter:
-        - clone-repository
+      params:
+        - name: IMAGE
+          value: $(params.output-image)
+        - name: DOCKERFILE
+          value: $(params.dockerfile)
+        - name: CONTEXT
+          value: $(params.path-context)
+        - name: HERMETIC
+          value: $(params.hermetic)
+        - name: PREFETCH_INPUT
+          value: $(params.prefetch-input)
+        - name: IMAGE_EXPIRES_AFTER
+          value: $(params.image-expires-after)
+        - name: COMMIT_SHA
+          value: $(tasks.clone-repository.results.commit)
+        # Buildpacks parameters
+        - name: APP_IMAGE
+          value: $(params.output-image)  #${IMAGE_NAME}
+        - name: SOURCE_SUBPATH
+          value: $(params.sourceSubPath)
+        - name: CNB_BUILDER_IMAGE
+          value: $(params.cnbBuilderImage) #${BUILDER_IMAGE}
+        - name: CNB_LIFECYCLE_IMAGE
+          value: $(params.cnbLifecycleImage) #${LIFECYCLE_IMAGE}
+        - name: CNB_EXPERIMENTAL_MODE
+          value: $(params.cnbExperimentalMode)
+        - name: CNB_LOG_LEVEL
+          value: $(params.cnbLogLevel)
+        - name: CNB_RUN_IMAGE
+          value: $(params.cnbRunImage) #${CNB_RUN_IMAGE}
+        - name: CNB_BUILD_IMAGE
+          value: $(params.cnbBuildImage) #${CNB_BUILD_IMAGE}
+        - name: CNB_USER_ID
+          value: $(tasks.buildpacks-extension-check.results.uid)
+        - name: CNB_GROUP_ID
+          value: $(tasks.buildpacks-extension-check.results.gid)
+        - name: CNB_ENV_VARS
+          value: [ "$(params.cnbBuildEnvVars)" ]
       taskRef:
         resolver: git
         params:
