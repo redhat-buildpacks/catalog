@@ -13,9 +13,9 @@ endif::[]
 
 == Introduction
 
-This GitHub project is a catalog of different artifacts: Pipeline, PipelineRun, Task, BuilderStrategy, etc to be used to build a runtime using https://buildpack.io/[Buildpack] in combination with https://tekton.dev/[Tekton], https://shipwright.io/[Shipwright] or https://developers.redhat.com/products/trusted-software-supply-chain/overview[RHTAP]:
+This GitHub project is a catalog of different artifacts: Pipeline, PipelineRun, Task, BuilderStrategy, etc to be used to build a runtime using https://buildpack.io/[Buildpack] in combination with https://tekton.dev/[Tekton], https://shipwright.io/[Shipwright] or https://konflux-ci.dev/[Konflux]:
 
-- RHTAP Buildpack: PipelineRun
+- Konflux Buildpack: PipelineRun
 - Tekton Buildpack: Pipeline and Tasks
 - Shipwright Buildpack: BuildStrategy (TODO)
 
