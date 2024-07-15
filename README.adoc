@@ -13,10 +13,16 @@ endif::[]
 
 == Introduction
 
-This GitHub project is a catalog of different artifacts: Pipeline, PipelineRun, Task, BuilderStrategy, etc to be used to build a runtime using https://buildpack.io/[Buildpack] in combination with https://tekton.dev/[Tekton], https://shipwright.io/[Shipwright] or https://konflux-ci.dev/[Konflux]:
+This project is a https://buildpack.io/[Buildpack] catalog of different kubernetes resources: Pipeline(Run), Task, etc. used to build an application, image with the following CI/CD technologies:
 
-- Konflux Buildpack: PipelineRun
-- Tekton Buildpack: Pipeline and Tasks
-- Shipwright Buildpack: BuildStrategy (TODO)
+- https://tekton.dev/[Tekton] Buildpack: Pipeline and Tasks
+- https://konflux-ci.dev/[Konflux]: Pipeline(Run) and Tasks
+- https://shipwright.io/[Shipwright Buildpack]: BuildStrategy (TODO)
 
-IMPORTANT: Instructions to play with such a technology is available https://github.com/redhat-buildpacks/testing[here].
+IMPORTANT: Instructions to use the different Buildpack resources is available https://github.com/redhat-buildpacks/testing[here].
+
+The catalog of the `Buildpack` resources is developed within the following folders:
+
+- tekton/pipeline
+- tekton/pipelinerun
+- tekton/task
