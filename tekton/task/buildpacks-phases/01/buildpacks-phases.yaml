@@ -33,6 +33,9 @@ spec:
       description: Reference to a run image to use.
     - name: CNB_LIFECYCLE_IMAGE
       description: The image to use when executing sensitive phases.
+    - name: CNB_PLATFORM_API
+      description: Buildpack Platform API to be used
+      default: "0.12"
     - name: CNB_EXPERIMENTAL_MODE
       description: Environment variable to control ALL experimental features by the platform.
       default: "warn"
@@ -79,7 +82,7 @@ spec:
   stepTemplate:
     env:
       - name: CNB_PLATFORM_API
-        value: "0.12"
+        value: $(params.CNB_PLATFORM_API)
       - name: CNB_EXPERIMENTAL_MODE
         value: $(params.CNB_EXPERIMENTAL_MODE)
       - name: HOME
