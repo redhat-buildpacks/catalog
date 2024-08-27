@@ -140,7 +140,7 @@ spec:
         done
         
         echo "--> Show what we got under workspace source ..."
-        ls -la $(workspaces.source.path)
+        ls -la $(workspaces.source.path)/source
         ls -la $(workspaces.source.path)/$(params.SOURCE_SUBPATH)
 
       volumeMounts:
