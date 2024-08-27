@@ -58,10 +58,8 @@ spec:
           set -x
         fi
         
-        echo "Check docker credentials"
+        echo "Check if docker cfg have been mounted"
         ls -la ${PARAM_CREDENTIALS_HOME}
-        ls -la ${PARAM_CREDENTIALS_HOME}/dockercfg/.dockerconfigjson
-        cat ${PARAM_CREDENTIALS_HOME}/dockercfg/.dockerconfigjson
 
         EXT_LABEL_1="io.buildpacks.extension.layers"
         EXT_LABEL_2="io.buildpacks.buildpack.order-extensions"
