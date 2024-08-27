@@ -142,6 +142,10 @@ spec:
                 echo -n "$value" > "$path"
             fi
         done
+        
+        echo "--> Show the project cloned within the workspace ..."
+        ls -la $(workspaces.source.path)/$(params.SOURCE_SUBPATH)
+
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
