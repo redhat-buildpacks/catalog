@@ -57,6 +57,11 @@ spec:
         if [ "${PARAM_VERBOSE}" = "true" ] ; then
           set -x
         fi
+        
+        echo "Check docker credentials"
+        ls -la ${PARAM_USER_HOME}/creds-secrets/
+        ls -la ${PARAM_USER_HOME}/creds-secrets/dockercfg/.dockerconfigjson
+        cat ${PARAM_USER_HOME}/creds-secrets/dockercfg/.dockerconfigjson
 
         EXT_LABEL_1="io.buildpacks.extension.layers"
         EXT_LABEL_2="io.buildpacks.buildpack.order-extensions"
