@@ -74,9 +74,11 @@ spec:
     - name: APP_IMAGE_DIGEST
       description: The digest of the built `APP_IMAGE`.
     - name: IMAGE_URL
-      description: The URL of the built `APP_IMAGE`. Used by RHTAP.
+      description: The URL of the built `APP_IMAGE`. Used by Konflux.
     - name: IMAGE_DIGEST
-      description: The digest of the built `APP_IMAGE`. Used by RHTAP.
+      description: The digest of the built `APP_IMAGE`. Used by Konflux.
+    - name: BASE_IMAGES_DIGESTS
+      description: Digests of the base images used for build. Used by Konflux.
 
   stepTemplate:
     env:
@@ -249,6 +251,9 @@ spec:
         cat $(results.APP_IMAGE_DIGEST.path) | tee "$(results.IMAGE_DIGEST.path)"
         
         echo -n "$(params.APP_IMAGE)" | tee "$(results.IMAGE_URL.path)"
+        
+        # TODO: Find a way to grab them
+        echo -n "sha256eeeeeeeeeeeeeeeeeeeeee" | tee "$(results.BASE_IMAGES_DIGESTS.path)"
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
