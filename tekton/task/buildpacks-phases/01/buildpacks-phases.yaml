@@ -112,7 +112,7 @@ spec:
           chown -R "$(params.CNB_USER_ID):$(params.CNB_GROUP_ID)" "$path"
         done
 
-        echo "> Parsing additional configuration..."
+        echo "--> Parsing additional configuration..."
         parsing_flag=""
         envs=()
         for arg in "$@"; do
@@ -124,7 +124,7 @@ spec:
             fi
         done
 
-        echo "> Processing any environment variables..."
+        echo "--> Processing any environment variables..."
         ENV_DIR="/platform/env"
 
         echo "--> Creating 'env' directory: $ENV_DIR"
@@ -138,6 +138,11 @@ spec:
                 echo -n "$value" > "$path"
             fi
         done
+        
+        echo "--> Show what we got under workspace source ..."
+        ls -la $(workspaces.source.path)
+        ls -la $(workspaces.source.path)/$(params.SOURCE_SUBPATH)
+
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
