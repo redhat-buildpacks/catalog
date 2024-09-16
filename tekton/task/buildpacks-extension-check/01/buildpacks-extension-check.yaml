@@ -60,13 +60,13 @@ spec:
         # Check if registry configuration file(s) have been mounted from secret(s)"
         if [[ "$(workspaces.creds.bound)" == "true" ]]; then
           echo "Registry configuration file(s) have been mounted from secret(s) ..."
-          ls -la $(workspaces.creds)/
+          ls -la $(workspaces.creds.path)/
         fi
 
         EXT_LABEL_1="io.buildpacks.extension.layers"
         EXT_LABEL_2="io.buildpacks.buildpack.order-extensions"
 
-        IMG_MANIFEST=$(skopeo inspect --authfile $(workspaces.creds)/dockercfg/.dockerconfigjson "docker://${PARAM_BUILDER_IMAGE}")
+        IMG_MANIFEST=$(skopeo inspect --authfile $(workspaces.creds.path)/dockercfg/.dockerconfigjson "docker://${PARAM_BUILDER_IMAGE}")
         
         # 
         # The following test should be reviewed as :
