@@ -61,7 +61,7 @@ spec:
       params:
         - name: builderImage
           value: $(params.cnbBuilderImage)
-      workspace:
+      workspaces:
         - name: creds-ws
           workspace: creds-ws
 
