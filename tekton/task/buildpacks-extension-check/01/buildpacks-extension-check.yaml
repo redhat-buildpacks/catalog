@@ -20,10 +20,6 @@ spec:
     Additionally, the CNB USER ID and CNB GROUP ID of the image will be exported as results.
 
   params:
-    - name: credentialsHome
-      description: Absolute path to the user's home directory.
-      type: string
-      default: "/tekton/creds-secrets/"
     - name: verbose
       description: Log the commands that are executed during `git-clone`'s operation.
       type: string
@@ -40,12 +36,15 @@ spec:
     - name: extensionLabels
       description: Extensions labels defined in the image
 
+  workspaces:
+    - name: creds
+      description: Directory to mount registry credentials from secrets
+      optional: true
+
   steps:
     - name: check-image-builder-extension
       image: quay.io/ch007m/extended-skopeo
       env:
-        - name: PARAM_CREDENTIALS_HOME
-          value: $(params.credentialsHome)
         - name: PARAM_VERBOSE
           value: $(params.verbose)
         - name: PARAM_BUILDER_IMAGE
@@ -58,13 +57,16 @@ spec:
           set -x
         fi
         
-        echo "Check if docker cfg have been mounted"
-        ls -la ${PARAM_CREDENTIALS_HOME}
+        # Check if registry configuration file(s) have been mounted from secret(s)"
+        if [[ "$(workspaces.creds.bound)" == "true" ]]; then
+          echo "Registry configuration file(s) have been mounted from secret(s) ..."
+          ls -la $(workspaces.creds)/
+        fi
 
         EXT_LABEL_1="io.buildpacks.extension.layers"
         EXT_LABEL_2="io.buildpacks.buildpack.order-extensions"
 
-        IMG_MANIFEST=$(skopeo inspect --authfile ${PARAM_CREDENTIALS_HOME}/dockercfg/.dockerconfigjson "docker://${PARAM_BUILDER_IMAGE}")
+        IMG_MANIFEST=$(skopeo inspect --authfile $(workspaces.creds)/dockercfg/.dockerconfigjson "docker://${PARAM_BUILDER_IMAGE}")
         
         # 
         # The following test should be reviewed as :
