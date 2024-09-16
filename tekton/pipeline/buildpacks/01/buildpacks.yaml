@@ -62,7 +62,7 @@ spec:
         - name: builderImage
           value: $(params.cnbBuilderImage)
       workspaces:
-        - name: creds-ws
+        - name: creds
           workspace: creds-ws
 
       taskRef:
