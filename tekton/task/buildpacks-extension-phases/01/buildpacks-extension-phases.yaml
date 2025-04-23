@@ -165,7 +165,7 @@ spec:
         - "-cache-image=$(params.CACHE_IMAGE)"
         - "-uid=$(params.CNB_USER_ID)"
         - "-gid=$(params.CNB_GROUP_ID)"
-        - "-insecure=$(params.CNB_INSECURE_REGISTRIES)"
+        - "-insecure-registry=$(params.CNB_INSECURE_REGISTRIES)"
         - "$(params.APP_IMAGE)"
       volumeMounts:
         - name: layers-dir
@@ -201,7 +201,7 @@ spec:
         - "-cache-image=$(params.CACHE_IMAGE)"
         - "-uid=$(params.CNB_USER_ID)"
         - "-gid=$(params.CNB_GROUP_ID)"
-        - "-insecure=$(params.CNB_INSECURE_REGISTRIES)"
+        - "-insecure-registry=$(params.CNB_INSECURE_REGISTRIES)"
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
@@ -248,7 +248,7 @@ spec:
         - "-process-type=$(params.PROCESS_TYPE)"
         - "-uid=$(params.CNB_USER_ID)"
         - "-gid=$(params.CNB_GROUP_ID)"
-        - "-insecure=$(params.CNB_INSECURE_REGISTRIES)"
+        - "-insecure-registry=$(params.CNB_INSECURE_REGISTRIES)"
         - "$(params.APP_IMAGE)"
       volumeMounts:
         - name: layers-dir
