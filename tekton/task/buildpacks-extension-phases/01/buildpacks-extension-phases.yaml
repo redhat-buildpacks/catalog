@@ -38,7 +38,7 @@ spec:
       description: The image to use when executing sensitive phases.
     - name: CNB_PLATFORM_API
       description: Buildpack Platform API to be used
-      default: "0.12"
+      default: "0.13"
     - name: CNB_EXPERIMENTAL_MODE
       description: Environment variable to control ALL experimental features by the platform.
       default: "warn"
