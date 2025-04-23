@@ -52,6 +52,8 @@ spec:
     - name: CNB_GROUP_ID
       description: The group ID of the builder image user.
       default: "1000"
+    - name: CNB_INSECURE_REGISTRIES
+      description: List of registries separated by a comma having a self-signed certificate where TLS verification will be skipped.
     - name: APP_IMAGE
       description: The name of where to store the app image.
     - name: CACHE_IMAGE
@@ -159,6 +161,7 @@ spec:
         - "-cache-image=$(params.CACHE_IMAGE)"
         - "-uid=$(params.CNB_USER_ID)"
         - "-gid=$(params.CNB_GROUP_ID)"
+        - "-insecure=$(params.CNB_INSECURE_REGISTRIES)"
         - "$(params.APP_IMAGE)"
       volumeMounts:
         - name: layers-dir
@@ -194,6 +197,7 @@ spec:
         - "-cache-image=$(params.CACHE_IMAGE)"
         - "-uid=$(params.CNB_USER_ID)"
         - "-gid=$(params.CNB_GROUP_ID)"
+        - "-insecure=$(params.CNB_INSECURE_REGISTRIES)"
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
@@ -233,6 +237,7 @@ spec:
         - "-process-type=$(params.PROCESS_TYPE)"
         - "-uid=$(params.CNB_USER_ID)"
         - "-gid=$(params.CNB_GROUP_ID)"
+        - "-insecure=$(params.CNB_INSECURE_REGISTRIES)"
         - "$(params.APP_IMAGE)"
       volumeMounts:
         - name: layers-dir

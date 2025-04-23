@@ -27,6 +27,9 @@ spec:
     - name: cnbRunImage
       type: string
       default: ""
+    - name: cnbInsecureRegistries
+      type: string
+      default: ""
     - name: cnbLogLevel
       type: string
       default: "info"
@@ -110,6 +113,8 @@ spec:
            value: $(tasks.buildpacks-extension-check.results.uid)
          - name: CNB_GROUP_ID
            value: $(tasks.buildpacks-extension-check.results.gid)
+         - name: CNB_INSECURE_REGISTRIES
+           value: $(params.cnbInsecureRegistries)
          - name: CNB_ENV_VARS
            value: ["$(params.cnbBuildEnvVars)"]
 
@@ -146,5 +151,7 @@ spec:
            value: $(tasks.buildpacks-extension-check.results.uid)
          - name: CNB_GROUP_ID
            value: $(tasks.buildpacks-extension-check.results.gid)
+         - name: CNB_INSECURE_REGISTRIES
+           value: $(params.cnbInsecureRegistries)
          - name: CNB_ENV_VARS
            value: ["$(params.cnbBuildEnvVars)"]
